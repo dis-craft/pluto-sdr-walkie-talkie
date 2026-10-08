@@ -848,7 +848,7 @@ blocks:
                   ctypes.POINTER(ctypes.c_int)
               ]
               self.lib.opus_decoder_create.restype = ctypes.c_void_p
-              self.lib.opus_decoder_decode.argtypes = [
+              self.lib.opus_decode.argtypes = [
                   ctypes.c_void_p,
                   ctypes.POINTER(ctypes.c_ubyte),
                   ctypes.c_int,
@@ -856,7 +856,7 @@ blocks:
                   ctypes.c_int,
                   ctypes.c_int
               ]
-              self.lib.opus_decoder_decode.restype = ctypes.c_int
+              self.lib.opus_decode.restype = ctypes.c_int
               self.lib.opus_decoder_destroy.argtypes = [ctypes.c_void_p]
               err = ctypes.c_int()
               self.dec = self.lib.opus_decoder_create(
@@ -881,12 +881,12 @@ blocks:
           def decode_one(self, pkt):
               pcm = (ctypes.c_int16 * self.frame)()
               if pkt is None:
-                  n = self.lib.opus_decoder_decode(
+                  n = self.lib.opus_decode(
                       self.dec, None, 0, pcm, self.frame, 0
                   )
               else:
                   raw = (ctypes.c_ubyte * len(pkt)).from_buffer_copy(pkt)
-                  n = self.lib.opus_decoder_decode(
+                  n = self.lib.opus_decode(
                       self.dec, raw, len(pkt), pcm, self.frame, 0
                   )
               if n < 0:
