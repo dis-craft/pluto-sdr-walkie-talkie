@@ -1,52 +1,131 @@
-# Pluto Digital Voice HD — final GNU Radio Companion build
+# Pluto SDR Walkie-Talkie
 
-This build is the corrected dashboard version of the ADALM-Pluto digital voice walkie-talkie flowgraph.
+A GNU Radio Companion digital voice transceiver for ADALM-Pluto.
 
-## Architecture
+## One canonical flowgraph
 
-TX: 16 kHz mono audio → DC blocker → 100 Hz HPF → 7 kHz LPF → speech compression → soft limiter → Opus 16 kbps CBR, 20 ms → sequence + CRC32 → K=7 rate-1/2 convolutional FEC → 22×34 block interleaver → 32-symbol preamble + 16-symbol sync → differential Gray QPSK → RRC α=0.25 → PTT → 8× interpolation → Pluto TX.
+Open only:
 
-RX: Pluto RX → 8× decimation → 14.5 kHz software channel filter → FLL band-edge frequency recovery → matched RRC / Gardner symbol timing → QPSK Costas carrier recovery → constellation decode → differential decode → symbol-to-bit expansion → preamble/sync search → inverse interleaving → Viterbi → CRC check → Opus decoder/PLC → 7 kHz audio LPF → speaker.
+`pluto_digital_voice_hd.grc`
 
-## Radio timing
+There are no separate TX/RX GRC files in the project. The same flowgraph supports:
 
-- Opus: 16 kHz mono, 16 kbps CBR, 20 ms frame, 40-byte payload.
-- 32-symbol preamble + 16-symbol sync + 374 coded QPSK symbols + 2 pad symbols = 424 symbols/frame.
-- Symbol rate: 21.2 ksym/s.
-- Modem baseband rate: 84.8 kS/s (4 samples/symbol).
-- Pluto stream rate: 678.4 kS/s (8× interpolation/decimation around the modem baseband).
-- QPSK RRC excess bandwidth: 0.25.
-- Approximate occupied waveform class: 26.5 kHz.
-- Pluto hardware RF bandwidth: 200 kHz minimum; narrow occupancy is created by baseband shaping/filtering.
+1. **Software simulation (default)** — runs with no Pluto connected.
+2. **Pluto hardware mode** — the Pluto TX and RX blocks are retained in the same graph for later RF testing.
 
-## Live dashboard
+## Default: hardware-free simulation
 
-The Qt GUI is organized into five tabs:
+The graph starts in simulation mode so the dashboard and complete DSP chain can be tested on an ordinary Ubuntu PC.
 
-1. **Controls** — TX/RX frequency, TX attenuation, RX manual gain, microphone gain, speaker volume and half-duplex PTT.
-2. **RF Spectrum** — live TX baseband spectrum, RX filtered spectrum and relative TX/RX baseband power monitor.
-3. **Modem** — RX QPSK constellation and FLL frequency estimate.
-4. **Audio** — live TX microphone waveform and decoded RX audio waveform.
-5. **System Notes** — profile and RF/test notes.
+```text
+800 Hz test audio
+    -> DC block / HPF / LPF / level / limiter
+    -> Opus 16 kbps CBR, 20 ms
+    -> CRC32 + K=7 rate-1/2 FEC + interleaving
+    -> differential QPSK + RRC
+    -> 8x interpolation to 678.4 kS/s
+    -> real-time throttle
+    -> AWGN + carrier-offset channel model
+    -> 8x decimation to 84.8 kS/s
+    -> FLL + timing recovery + Costas
+    -> QPSK decode
+    -> frame sync + Viterbi + CRC
+    -> Opus decode / PLC
+    -> RX audio + visualizations
+```
+
+The following controls are available for simulation:
+
+- Simulation Audio Tone
+- Simulation Audio Level
+- Simulation Noise
+- Simulation Frequency Offset
+
+Start with noise = 0 and frequency offset = 0. Then introduce offset/noise and watch the RF spectrum, QPSK constellation and FLL estimate.
+
+The microphone Audio Source and speaker Audio Sink are retained in the graph but disabled in the no-hardware simulation path.
+
+## Dashboard / visualization
+
+The GRC contains live visualization blocks for:
+
+- TX baseband spectrum
+- RX channel spectrum
+- TX/RX power monitor
+- QPSK constellation after carrier/timing recovery
+- FLL frequency estimate
+- TX microphone/test waveform
+- RX audio waveform
+
+These are ordinary GNU Radio QT GUI sinks, so the flowgraph can be used as a modem/RF troubleshooting dashboard.
+
+## Digital voice profile
+
+### Audio
+
+- 16 kHz mono
+- 100 Hz high-pass
+- 7 kHz low-pass
+- gentle compressor
+- soft limiter
+- Opus 16 kbps CBR
+- 20 ms frames / 40-byte Opus payload
+
+### Framing and protection
+
+- 16-bit sequence number
+- CRC32
+- K=7, rate-1/2 convolutional FEC
+- 22 x 34 block interleaver
+- deterministic preamble + sync word
+- Opus packet-loss concealment on RX
+
+### Modem
+
+- differential QPSK
+- 4 samples/symbol at modem baseband
+- RRC excess bandwidth 0.25
+- 21.2 ksym/s
+- 84.8 kS/s modem baseband
+- 678.4 kS/s Pluto stream rate
+- Pluto hardware RF bandwidth set to 200 kHz
 
 ## Dependencies
 
-Ubuntu/Debian example:
+Ubuntu/Debian:
 
 ```bash
 sudo apt update
 sudo apt install gnuradio gr-iio libopus0
-
 ```
 
-On a distribution enforcing an externally managed Python environment, use an appropriate virtual environment or distro package for `opuslib`.
+The Opus encoder/decoder in the flowgraph calls the system `libopus.so.0` directly, so the Python `opuslib` package is not required.
 
-## First test
+The software simulation additionally uses GNU Radio's `analog`, `channels`, `blocks`, `digital`, `filter` and `QT GUI` modules.
 
-Use two Plutos or separate TX/RX instances. For the first RF test, connect TX to RX through a **suitable RF attenuator chain**. Never connect a Pluto TX port directly to a Pluto RX port.
+## Run the simulation
 
-Start RX manual gain around 35–40 dB. Keep TX attenuation conservative. Set both frequencies identically. Put the transmitter in **TX / PTT** only while speaking.
+From the repository root:
 
-## RF / regulatory note
+```bash
+gnuradio-companion ./pluto_digital_voice_hd.grc
+```
 
-The default frequency is 433.92 MHz as a development value only. Actual permitted frequencies, power, duty cycle, occupied bandwidth and amplification depend on local rules and authorization. Keep early tests cabled/attenuated or under the appropriate experimental authorization.
+Press Run/Play.
+
+No ADALM-Pluto is required in the default simulation mode.
+
+## Later: use both Pluto TX and RX
+
+The same file already contains:
+
+- PlutoSDR Sink (TX)
+- PlutoSDR Source (RX)
+
+They are deliberately disabled by default so the project can be executed without hardware.
+
+For a first hardware test, use a properly attenuated cabled RF path. Do not connect a Pluto TX directly into a Pluto RX. After the hardware path is verified, the TX/RX frequency, gain and attenuation controls can be adjusted within your legal/authorized operating limits.
+
+## Important RF note
+
+The example default frequency is 433.92 MHz for development. Use only frequencies, occupied bandwidths, output powers, duty cycles and external RF amplification that are permitted for your location and authorization. For initial modem development, a cabled/attenuated test is preferable to uncontrolled OTA transmission.
