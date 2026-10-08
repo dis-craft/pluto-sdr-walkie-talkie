@@ -360,7 +360,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['speech_soft_limiter', 'blk', [], [['0', 'float', 1]], [['0', 'float', 1]], 'Prevents clipping and evens speech level.', []]
+    _io_cache: ('speech_soft_limiter', 'blk', [], [('0', 'float', 1)], [('0', 'float', 1)], 'Prevents clipping and evens speech level.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -378,7 +378,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['opus_cbr_encoder_16k', 'blk', [], [['0', 'float', 1]], [['0', 'byte', 1]], '16 kHz mono Opus 16 kbps CBR, 20 ms using system libopus; no opuslib Python package required.', []]
+    _io_cache: ('opus_cbr_encoder_16k', 'blk', [], [('0', 'float', 1)], [('0', 'byte', 1)], '16 kHz mono Opus 16 kbps CBR, 20 ms using system libopus; no opuslib Python package required.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -403,7 +403,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['voice_fec_framer', 'blk', [], [['0', 'byte', 1]], [['0', 'byte', 1]], 'CRC32 + K=7 rate-1/2 convolutional FEC + 22x34 block interleaver. Self-contained for portability.', []]
+    _io_cache: ('voice_fec_framer', 'blk', [], [('0', 'byte', 1)], [('0', 'byte', 1)], 'CRC32 + K=7 rate-1/2 convolutional FEC + 22x34 block interleaver. Self-contained for portability.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -708,7 +708,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['qpsk_symbols_to_bits', 'blk', [], [['0', 'byte', 1]], [['0', 'byte', 1]], 'Expand symbol indices back to individual FEC bits.', []]
+    _io_cache: ('qpsk_symbols_to_bits', 'blk', [], [('0', 'byte', 1)], [('0', 'byte', 1)], 'Expand symbol indices back to individual FEC bits.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -738,7 +738,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['voice_fec_deframer', 'blk', [], [['0', 'byte', 1]], [['0', 'byte', 1]], 'Frame sync + Viterbi + CRC32. Emits 2-byte sequence + 40-byte Opus packet.', []]
+    _io_cache: ('voice_fec_deframer', 'blk', [], [('0', 'byte', 1)], [('0', 'byte', 1)], 'Frame sync + Viterbi + CRC32. Emits 2-byte sequence + 40-byte Opus packet.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
@@ -756,7 +756,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ['opus_decoder_16k', 'blk', [], [['0', 'byte', 1]], [['0', 'float', 1]], '16 kHz mono Opus decoder with PLC; uses system libopus directly.', []]
+    _io_cache: ('opus_decoder_16k', 'blk', [], [('0', 'byte', 1)], [('0', 'float', 1)], '16 kHz mono Opus decoder with PLC; uses system libopus directly.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
