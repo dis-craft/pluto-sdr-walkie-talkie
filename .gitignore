@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# GNU Radio / generated build artifacts
+*.grc~
+.grc-cache/
+build/
+build-*/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Runtime / local artifacts
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# IDE/editor
+.vscode/
+.idea/
