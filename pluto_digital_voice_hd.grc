@@ -1346,6 +1346,18 @@ blocks:
     coordinate: [40, 820]
     rotation: 0
     state: enabled
+- name: final_marker
+  id: note
+  parameters:
+    content: 'DISCRAFT FINAL BUILD — if this text is visible in GRC, you opened the canonical repository file. Audio: 16 kHz mono. Opus: 16 kbps CBR/20 ms. Digital modem: differential QPSK + RRC + FEC + synchronization. Pluto sample stream: 678.4 kS/s. Hardware RF bandwidth: 200 kHz minimum. First RF test must use suitable attenuation.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 820]
+    rotation: 0
+    state: enabled
+
 connections:
 - [audio_src, '0', tx_dc, '0']
 - [audio_src, '0', tx_audio_time, '0']
@@ -1391,14 +1403,5 @@ connections:
 - [rx_power_add, '0', rx_power_db, '0']
 - [rx_power_db, '0', power_sink, '1']
 
-- name: final_marker
-  id: note
-  parameters:
-    content: 'DISCRAFT FINAL BUILD — if this text is visible in GRC, you opened the canonical repository file. Audio: 16 kHz mono. Opus: 16 kbps CBR/20 ms. Digital modem: differential QPSK + RRC + FEC + synchronization. Pluto sample stream: 678.4 kS/s. Hardware RF bandwidth: 200 kHz minimum. First RF test must use suitable attenuation.'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [40, 820]
-    rotation: 0
-    state: enabled
+metadata:
+  file_format: 1
