@@ -103,10 +103,10 @@ blocks:
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: int
-    start: '70000000'
+    start: '325000000'
     step: '1000'
-    stop: '6000000000'
-    value: '4169600000'
+    stop: '3800000000'
+    value: '433920000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -123,10 +123,10 @@ blocks:
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: int
-    start: '70000000'
+    start: '325000000'
     step: '1000'
-    stop: '6000000000'
-    value: '4169600000'
+    stop: '3800000000'
+    value: '433920000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -408,6 +408,60 @@ blocks:
     rotation: 0
     state: enabled
 
+- name: sim_audio
+  id: analog_sig_source_x
+  parameters:
+    alias: ''
+    amp: sim_audio_amp
+    comment: 'Deterministic speech-band tone used for a hardware-free end-to-end test.'
+    freq: sim_audio_freq
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_audio
+    showports: 'False'
+    type: float
+    waveform: analog.GR_SIN_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [500, 700]
+    rotation: 0
+    state: enabled
+- name: sim_throttle
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Real-time pacing for software-only test.'
+    ignoretag: 'True'
+    samples_per_second: pluto_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1710, 700]
+    rotation: 0
+    state: enabled
+- name: sim_channel
+  id: channels_channel_model
+  parameters:
+    block_tags: 'False'
+    comment: 'Software RF channel model: AWGN + carrier offset.'
+    epsilon: '1.0'
+    freq_offset: sim_freq_offset
+    noise_voltage: sim_noise
+    seed: '42'
+    taps: '[1.0+0j]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1870, 700]
+    rotation: 0
+    state: enabled
 - name: audio_src
   id: audio_source
   parameters:
@@ -958,7 +1012,7 @@ blocks:
       \ self.buf=np.empty(0,dtype=np.uint8)\n    def general_work(self,input_items,output_items):\n        x=input_items[0]\n        if len(x): self.buf=np.concatenate((self.buf,x.astype(np.uint8,copy=False)));\
       \ self.consume(0,len(x))\n        out=output_items[0]; made=0; total=848; plen=len(PAT)\n        while len(self.buf)>=plen and made+42<=len(out):\n            found=-1\n            for i in range(len(self.buf)-plen+1):\n\
       \                if np.count_nonzero(self.buf[i:i+plen]!=PAT)<=5: found=i; break\n            if found<0: self.buf=self.buf[-(plen-1):]; break\n            if found>0: self.buf=self.buf[found:]\n\
-      \            if len(self.buf)<total: break\n            frame=self.buf[:total]; coded=frame[plen:plen+748]\n            decbits,metric=vit(coded)\n            if decbits is not None and metric<=80:\n\
+      \            if len(self.buf)<total: break\n            frame=self.buf[:total]; coded=frame[plen:plen+748].reshape(34,22).T.flatten()\n            decbits,metric=vit(coded)\n            if decbits is not None and metric<=80:\n\
       \                body=np.packbits(decbits[:368],bitorder='big').tobytes(); seq=body[:2]; payload=body[2:42]; crc=body[42:46]\n                if len(body)>=46 and zlib.crc32(seq+payload).to_bytes(4,'big')==crc:\n\
       \                    out[made:made+42]=np.frombuffer(seq+payload,dtype=np.uint8); made+=42; self.buf=self.buf[total:]; continue\n            self.buf=self.buf[1:]\n        return made\n"
     _window_size: '0'
@@ -1589,6 +1643,31 @@ blocks:
     rotation: 0
     state: enabled
 
+
+- name: runtime_note
+  id: note
+  parameters:
+    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 1.696 MSPS, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 600]
+    rotation: 0
+    state: enabled
+
+- name: simulation_note
+  id: note
+  parameters:
+    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the digital voice TX path, interpolates the 84.8 kS/s modem to the same 1.696 MSPS stream used by the Pluto blocks, passes it through AWGN + carrier offset, decimates back to 84.8 kS/s, then runs FLL/timing/Costas/QPSK/FEC/Opus RX and the live visualizations. Pluto TX and Pluto RX are retained in the graph but DISABLED by default. Audio Source and Audio Sink are also disabled in simulation. Hardware notes: the Pluto is a 1x1 RF implementation of the AD9363 with separate TX/RX SMA ports; for best portable performance use a tuned external antenna rather than the supplied stock antenna at UHF. At 433 MHz a quarter-wave element is about 17.3 cm and a half-wave dipole is about 34.6 cm total; final dimensions require matching/velocity-factor adjustment and a usable ground plane. Later, enable the Pluto blocks and disable the simulation link. For same-antenna half-duplex operation an external RF T/R switch is needed; otherwise keep TX and RX antennas isolated.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 600]
+    rotation: 0
+    state: enabled
+
 connections:
 - [sim_audio, '0', tx_dc, '0']
 - [sim_audio, '0', tx_audio_time, '0']
@@ -1632,31 +1711,6 @@ connections:
 - [rx_mag, '0', rx_power_add, '0']
 - [rx_power_add, '0', rx_power_db, '0']
 - [rx_power_db, '0', power_sink, '1']
-
-- name: runtime_note
-  id: note
-  parameters:
-    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 1.696 MSPS, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 600]
-    rotation: 0
-    state: enabled
-
-- name: simulation_note
-  id: note
-  parameters:
-    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the digital voice TX path, interpolates the 84.8 kS/s modem to the same 1.696 MSPS stream used by the Pluto blocks, passes it through AWGN + carrier offset, decimates back to 84.8 kS/s, then runs FLL/timing/Costas/QPSK/FEC/Opus RX and the live visualizations. Pluto TX and Pluto RX are retained in the graph but DISABLED by default. Audio Source and Audio Sink are also disabled in simulation. Hardware notes: the Pluto is a 1x1 RF implementation of the AD9363 with separate TX/RX SMA ports; for best portable performance use a tuned external antenna rather than the supplied stock antenna at UHF. At 433 MHz a quarter-wave element is about 17.3 cm and a half-wave dipole is about 34.6 cm total; final dimensions require matching/velocity-factor adjustment and a usable ground plane. Later, enable the Pluto blocks and disable the simulation link. For same-antenna half-duplex operation an external RF T/R switch is needed; otherwise keep TX and RX antennas isolated.'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [360, 600]
-    rotation: 0
-    state: enabled
-
 
 metadata:
   file_format: 1
