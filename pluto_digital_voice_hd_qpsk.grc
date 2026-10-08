@@ -1,0 +1,801 @@
+options:
+  parameters:
+    author: DISCRAFT
+    catch_exceptions: 'True'
+    category: '[Core]'
+    comment: 'HD digital voice transceiver for ADALM-Pluto: 16 kHz mono Opus 16 kbps CBR, CRC32, K=7 rate-1/2 convolutional FEC, interleaving, Gray differential QPSK, RRC pulse shaping.'
+    description: 'Low-latency digital voice walkie-talkie for ADALM-Pluto'
+    gen_cmake: 'On'
+    generate_options: qt_gui
+    hier_block_src_path: .
+    id: pluto_digital_voice_hd_qpsk
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    realtime_scheduling: '1'
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: 'False'
+    title: Pluto Digital Voice HD - Opus/QPSK/FEC
+    window_size: (1800,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [10,10]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_audio
+  id: variable
+  parameters:
+    comment: 'Opus speech sample rate'
+    value: '16000'
+  states:
+    coordinate: [40,40]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: 'QPSK samples per symbol'
+    value: '4'
+  states:
+    coordinate: [40,80]
+    rotation: 0
+    state: enabled
+- name: baseband_rate
+  id: variable
+  parameters:
+    comment: '4 x 19.6 ksym/s'
+    value: '78400'
+  states:
+    coordinate: [40,120]
+    rotation: 0
+    state: enabled
+- name: pluto_rate
+  id: variable
+  parameters:
+    comment: '8x baseband-to-Pluto interpolation'
+    value: '627200'
+  states:
+    coordinate: [40,160]
+    rotation: 0
+    state: enabled
+- name: tx_freq
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Use only a frequency you are authorized to use.'
+    gui_hint: ''
+    label: TX frequency (Hz)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '70000000'
+    step: '1000'
+    stop: '6000000000'
+    value: '433920000'
+    widget: counter_slider
+  states:
+    coordinate: [40,220]
+    rotation: 0
+    state: enabled
+- name: rx_freq
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Use only a frequency you are authorized to use.'
+    gui_hint: ''
+    label: RX frequency (Hz)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '70000000'
+    step: '1000'
+    stop: '6000000000'
+    value: '433920000'
+    widget: counter_slider
+  states:
+    coordinate: [40,290]
+    rotation: 0
+    state: enabled
+- name: tx_attenuation
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Lower attenuation = higher output. Respect applicable limits.'
+    gui_hint: ''
+    label: TX attenuation (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.25'
+    stop: '60'
+    value: '10'
+    widget: counter_slider
+  states:
+    coordinate: [40,360]
+    rotation: 0
+    state: enabled
+- name: rx_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Manual gain. Start near 38 dB.'
+    gui_hint: ''
+    label: RX gain (dB)
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.5'
+    stop: '73'
+    value: '38'
+    widget: counter_slider
+  states:
+    coordinate: [40,430]
+    rotation: 0
+    state: enabled
+- name: mic_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Mic level trim'
+    gui_hint: ''
+    label: Mic gain
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.25'
+    step: '0.05'
+    stop: '3'
+    value: '1'
+    widget: counter_slider
+  states:
+    coordinate: [40,500]
+    rotation: 0
+    state: enabled
+- name: rx_volume
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Speaker gain'
+    gui_hint: ''
+    label: RX volume
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.05'
+    stop: '2'
+    value: '1'
+    widget: counter_slider
+  states:
+    coordinate: [40,570]
+    rotation: 0
+    state: enabled
+- name: ptt_enable
+  id: variable_qtgui_chooser
+  parameters:
+    comment: 'Half-duplex PTT gate'
+    gui_hint: ''
+    label: TX / PTT
+    type: int
+    num_opts: '2'
+    options: '[0,1]'
+    labels: '[''RX / Standby'',''TX / PTT'']'
+    value: '0'
+    option0: '0'
+    label0: RX / Standby
+    option1: '1'
+    label1: TX / PTT
+    option2: '2'
+    label2: ''
+    option3: '3'
+    label3: ''
+    option4: '4'
+    label4: ''
+    widget: radio_buttons
+    orient: QtWidgets.QHBoxLayout
+  states:
+    coordinate: [40,640]
+    rotation: 0
+    state: enabled
+
+- name: audio_src
+  id: audio_source
+  parameters:
+    comment: '16 kHz mono microphone'
+    device_name: ''
+    num_outputs: '1'
+    ok_to_block: 'True'
+    samp_rate: samp_audio
+  states:
+    coordinate: [300,80]
+    rotation: 0
+    state: enabled
+- name: tx_dc
+  id: dc_blocker_xx
+  parameters:
+    comment: 'Remove microphone DC bias'
+    length: '64'
+    long_form: 'True'
+    type: ff
+  states:
+    coordinate: [470,80]
+    rotation: 0
+    state: enabled
+- name: tx_hp
+  id: high_pass_filter
+  parameters:
+    beta: '6.76'
+    comment: 'Remove subsonic rumble'
+    cutoff_freq: '100'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    samp_rate: samp_audio
+    transition_width: '100'
+    type: fir_filter_fff
+    win: window.WIN_HAMMING
+  states:
+    coordinate: [640,80]
+    rotation: 0
+    state: enabled
+- name: tx_lp
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    comment: 'Speech bandwidth'
+    cutoff_freq: '7000'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    samp_rate: samp_audio
+    transition_width: '500'
+    type: fir_filter_fff
+    win: window.WIN_HAMMING
+  states:
+    coordinate: [810,80]
+    rotation: 0
+    state: enabled
+- name: tx_gain
+  id: blocks_multiply_const_vxx
+  parameters:
+    comment: 'Mic level trim'
+    const: mic_gain
+    mode: scalar
+    type: float
+    vlen: '1'
+  states:
+    coordinate: [980,80]
+    rotation: 0
+    state: enabled
+- name: tx_limiter
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np
+from gnuradio import gr
+class blk(gr.sync_block):
+    def __init__(self):
+        gr.sync_block.__init__(self,name='Speech Soft Limiter',in_sig=[np.float32],out_sig=[np.float32])
+        self.drive=1.8
+        self.norm=np.tanh(self.drive)
+    def work(self,input_items,output_items):
+        output_items[0][:]=np.tanh(self.drive*input_items[0])/self.norm
+        return len(output_items[0])
+"
+    affinity: ''
+    alias: ''
+    comment: 'Soft limiter'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [1150,80]
+    rotation: 0
+    state: enabled
+- name: opus_enc
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np
+from gnuradio import gr
+import opuslib
+class blk(gr.basic_block):
+    def __init__(self):
+        gr.basic_block.__init__(self,name='Opus 16k 16kbps CBR Encoder',in_sig=[np.float32],out_sig=[np.uint8])
+        self.rate=16000; self.frame=320; self.packet_bytes=40
+        self.buf=np.empty(0,dtype=np.float32)
+        self.enc=opuslib.Encoder(self.rate,1,opuslib.APPLICATION_VOIP)
+        self.enc.bitrate=16000
+        self.enc.vbr=False
+        try: self.enc.complexity=10
+        except Exception: pass
+    def general_work(self,input_items,output_items):
+        x=input_items[0]
+        if len(x):
+            self.buf=np.concatenate((self.buf,x.astype(np.float32,copy=False)))
+            self.consume(0,len(x))
+        out=output_items[0]
+        nframes=min(len(self.buf)//self.frame,len(out)//self.packet_bytes)
+        if nframes<=0: return 0
+        p=0; c=0
+        for _ in range(nframes):
+            pcm=np.clip(self.buf[c:c+self.frame],-1.0,1.0)
+            packet=self.enc.encode((pcm*32767.0).astype(np.int16).tobytes(),self.frame)
+            if len(packet)!=self.packet_bytes:
+                raise RuntimeError('Opus CBR packet is not 40 bytes')
+            out[p:p+40]=np.frombuffer(packet,dtype=np.uint8)
+            p+=40; c+=self.frame
+        self.buf=self.buf[c:]
+        return p
+"
+    affinity: ''
+    alias: ''
+    comment: 'Opus 16 kbps CBR, 20 ms frames'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [1320,80]
+    rotation: 0
+    state: enabled
+- name: fec_tx
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np
+import zlib
+from gnuradio import gr
+SYNC=0x1ACFFC1D; G0=0o171; G1=0o133
+def bits(b): return np.unpackbits(np.frombuffer(b,dtype=np.uint8),bitorder='big').astype(np.uint8)
+def enc(x):
+    s=0; o=[]
+    for b in x:
+        r=((s<<1)|int(b))&0x7f
+        o += [(r&G0).bit_count()&1,(r&G1).bit_count()&1]
+        s=r&0x3f
+    for _ in range(6):
+        r=(s<<1)&0x7f
+        o += [(r&G0).bit_count()&1,(r&G1).bit_count()&1]
+        s=r&0x3f
+    return np.asarray(o,dtype=np.uint8)
+class blk(gr.basic_block):
+    def __init__(self):
+        gr.basic_block.__init__(self,name='CRC32 FEC Framer',in_sig=[np.uint8],out_sig=[np.uint8])
+        self.buf=bytearray(); self.seq=0
+    def general_work(self,input_items,output_items):
+        x=input_items[0]
+        if len(x):
+            self.buf.extend(bytes(x.tolist())); self.consume(0,len(x))
+        out=output_items[0]; nf=min(len(self.buf)//40,len(out)//98)
+        if nf<=0: return 0
+        p=0
+        sync=np.array([(SYNC>>i)&1 for i in range(31,-1,-1)],dtype=np.uint8)
+        for _ in range(nf):
+            payload=bytes(self.buf[:40]); del self.buf[:40]
+            hdr=(self.seq&0xffff).to_bytes(2,'big')
+            crc=zlib.crc32(hdr+payload).to_bytes(4,'big')
+            coded=enc(bits(hdr+payload+crc))
+            coded=coded.reshape(22,34).T.flatten()
+            frame=np.concatenate((sync,coded,np.zeros(4,dtype=np.uint8)))
+            out[p:p+98]=np.packbits(frame,bitorder='big'); p+=98
+            self.seq=(self.seq+1)&0xffff
+        return p
+"
+    affinity: ''
+    alias: ''
+    comment: 'CRC32 + K=7 rate-1/2 convolutional FEC + 22x34 bit interleaver'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [1490,80]
+    rotation: 0
+    state: enabled
+- name: qpsk_mod
+  id: digital_psk_mod
+  parameters:
+    constellation_points: '4'
+    mod_code: '"gray"'
+    differential: 'True'
+    samples_per_symbol: '4'
+    excess_bw: '0.25'
+    verbose: 'False'
+    log: 'False'
+  states:
+    coordinate: [1660,80]
+    rotation: 0
+    state: enabled
+- name: ptt_gate
+  id: blocks_multiply_const_vxx
+  parameters:
+    comment: 'PTT gate'
+    const: ptt_enable
+    mode: scalar
+    type: complex
+    vlen: '1'
+  states:
+    coordinate: [1830,80]
+    rotation: 0
+    state: enabled
+- name: tx_resamp
+  id: rational_resampler_xxx
+  parameters:
+    comment: '78.4 kS/s -> 627.2 kS/s'
+    decim: '1'
+    fbw: '0.45'
+    interp: '8'
+    taps: '[]'
+    type: ccc
+  states:
+    coordinate: [2000,80]
+    rotation: 0
+    state: enabled
+- name: pluto_tx
+  id: iio_pluto_sink
+  parameters:
+    attenuation1: tx_attenuation
+    bandwidth: '200000'
+    buffer_size: '32768'
+    cyclic: 'False'
+    fpass: '0'
+    filter: ''
+    filter_source: "'Auto'"
+    fstop: '0'
+    frequency: tx_freq
+    len_tag_key: ''
+    samplerate: pluto_rate
+    type: fc32
+    uri: ''
+  states:
+    coordinate: [2170,80]
+    rotation: 0
+    state: enabled
+- name: tx_fft
+  id: qtgui_freq_sink_x
+  parameters:
+    alpha: '1.0'
+    autoscale: 'False'
+    average: '0.2'
+    axislabels: 'True'
+    bw: baseband_rate
+    fftsize: '4096'
+    freqhalf: 'True'
+    grid: 'True'
+    label: TX Baseband
+    name: TX baseband
+    nconnections: '1'
+    showports: 'False'
+    update_time: '0.10'
+    ymin: '-120'
+    ymax: '10'
+    fc: '0'
+    label1: TX
+    units: dB
+    norm_window: 'False'
+    ctrlpanel: 'False'
+    legend: 'True'
+    width1: '1'
+    alpha1: '1.0'
+    color1: '"blue"'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_level: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+  states:
+    coordinate: [1830,210]
+    rotation: 0
+    state: enabled
+
+- name: pluto_rx
+  id: iio_pluto_source
+  parameters:
+    bbdc: 'True'
+    bandwidth: '200000'
+    buffer_size: '32768'
+    fpass: '0'
+    filter: ''
+    filter_source: "'Auto'"
+    fstop: '0'
+    frequency: rx_freq
+    gain1: "'manual'"
+    len_tag_key: packet_len
+    manual_gain1: rx_gain
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: pluto_rate
+    type: fc32
+    uri: ''
+  states:
+    coordinate: [300,360]
+    rotation: 0
+    state: enabled
+- name: rx_resamp
+  id: rational_resampler_xxx
+  parameters:
+    comment: '627.2 kS/s -> 78.4 kS/s'
+    decim: '8'
+    fbw: '0.45'
+    interp: '1'
+    taps: '[]'
+    type: ccc
+  states:
+    coordinate: [470,360]
+    rotation: 0
+    state: enabled
+- name: rx_channel
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    comment: 'Software channel LPF; preserve ~24.5 kHz-class waveform'
+    cutoff_freq: '12500'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    samp_rate: baseband_rate
+    transition_width: '2500'
+    type: fir_filter_ccf
+    win: window.WIN_HAMMING
+  states:
+    coordinate: [640,360]
+    rotation: 0
+    state: enabled
+- name: qpsk_demod
+  id: digital_psk_demod
+  parameters:
+    constellation_points: '4'
+    differential: 'True'
+    samples_per_symbol: '4'
+    excess_bw: '0.25'
+    freq_bw: '0.03'
+    timing_bw: '0.03'
+    phase_bw: '0.02'
+    mod_code: '"gray"'
+    verbose: 'False'
+    log: 'False'
+  states:
+    coordinate: [810,360]
+    rotation: 0
+    state: enabled
+- name: fec_rx
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np
+import zlib
+from gnuradio import gr
+SYNC=0x1ACFFC1D; G0=0o171; G1=0o133
+def tables():
+    n=np.zeros((64,2),dtype=np.uint8); a=np.zeros((64,2),dtype=np.uint8); b=np.zeros((64,2),dtype=np.uint8)
+    for s in range(64):
+        for bit in (0,1):
+            r=((s<<1)|bit)&0x7f; n[s,bit]=r&0x3f
+            a[s,bit]=(r&G0).bit_count()&1; b[s,bit]=(r&G1).bit_count()&1
+    return n,a,b
+NEXT,O0,O1=tables()
+def vit(c):
+    ns=len(c)//2; INF=10**9
+    m=np.full(64,INF,dtype=np.int32); m[0]=0
+    ps=np.zeros((ns,64),dtype=np.int8); pb=np.zeros((ns,64),dtype=np.int8)
+    for t in range(ns):
+        r0=int(c[2*t]); r1=int(c[2*t+1]); nm=np.full(64,INF,dtype=np.int32)
+        for s in range(64):
+            if m[s]>=INF: continue
+            for bit in (0,1):
+                q=int(NEXT[s,bit]); bm=(int(O0[s,bit])!=r0)+(int(O1[s,bit])!=r1)
+                v=int(m[s])+bm
+                if v<int(nm[q]):
+                    nm[q]=v; ps[t,q]=s; pb[t,q]=bit
+        m=nm
+    if m[0]>=INF: return None,INF
+    bits=np.zeros(ns,dtype=np.uint8); s=0
+    for t in range(ns-1,-1,-1):
+        bits[t]=pb[t,s]; s=int(ps[t,s])
+    return bits,int(m[0])
+class blk(gr.basic_block):
+    def __init__(self):
+        gr.basic_block.__init__(self,name='FEC Deframer + Viterbi',in_sig=[np.uint8],out_sig=[np.uint8])
+        self.buf=bytearray(); self.expected=None
+    def general_work(self,input_items,output_items):
+        x=input_items[0]
+        if len(x):
+            self.buf.extend(bytes(x.tolist())); self.consume(0,len(x))
+        out=output_items[0]; made=0
+        while len(self.buf)>=98 and made+42<=len(out):
+            frame=np.unpackbits(np.frombuffer(bytes(self.buf[:98]),dtype=np.uint8),bitorder='big')
+            if not np.array_equal(frame[:32],np.array([(SYNC>>i)&1 for i in range(31,-1,-1)],dtype=np.uint8)):
+                del self.buf[0]; continue
+            c=frame[32:32+748].reshape(34,22).T.flatten()
+            d,metric=vit(c)
+            if d is None or metric>80:
+                del self.buf[0]; continue
+            raw=np.packbits(d[:368],bitorder='big').tobytes()
+            seq=raw[:2]; payload=raw[2:42]; crc=raw[42:46]
+            if len(raw)<46 or zlib.crc32(seq+payload).to_bytes(4,'big')!=crc:
+                del self.buf[0]; continue
+            out[made:made+42]=np.frombuffer(seq+payload,dtype=np.uint8); made+=42
+            del self.buf[:98]
+        return made
+"
+    affinity: ''
+    alias: ''
+    comment: 'Sync + inverse interleaver + Viterbi + CRC32'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [980,360]
+    rotation: 0
+    state: enabled
+- name: opus_dec
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np
+from gnuradio import gr
+import opuslib
+class blk(gr.basic_block):
+    def __init__(self):
+        gr.basic_block.__init__(self,name='Opus 16k Decoder + PLC',in_sig=[np.uint8],out_sig=[np.float32])
+        self.rate=16000; self.frame=320; self.packet=42; self.buf=bytearray(); self.expected=None
+        self.dec=opuslib.Decoder(self.rate,1); self.audio=np.empty(0,dtype=np.float32)
+    def general_work(self,input_items,output_items):
+        x=input_items[0]
+        if len(x):
+            self.buf.extend(bytes(x.tolist())); self.consume(0,len(x))
+        while len(self.buf)>=self.packet:
+            raw=bytes(self.buf[:self.packet]); del self.buf[:self.packet]
+            seq=int.from_bytes(raw[:2],'big'); pkt=raw[2:]
+            try:
+                if self.expected is None: self.expected=seq
+                gap=(seq-self.expected)&0xffff
+                if gap>32768: continue
+                for _ in range(gap):
+                    plc=self.dec.decode(b'',self.frame)
+                    self.audio=np.concatenate((self.audio,np.frombuffer(plc,dtype=np.int16).astype(np.float32)/32767.0))
+                pcm=self.dec.decode(pkt,self.frame)
+                self.audio=np.concatenate((self.audio,np.frombuffer(pcm,dtype=np.int16).astype(np.float32)/32767.0))
+                self.expected=(seq+1)&0xffff
+            except Exception:
+                pass
+        out=output_items[0]; n=min(len(out),len(self.audio))
+        if n:
+            out[:n]=self.audio[:n]; self.audio=self.audio[n:]
+        return n
+"
+    affinity: ''
+    alias: ''
+    comment: 'Sequence-aware Opus decoder with packet-loss concealment'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [1170,360]
+    rotation: 0
+    state: enabled
+- name: rx_lp
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    comment: 'Final audio LPF'
+    cutoff_freq: '7000'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    samp_rate: samp_audio
+    transition_width: '500'
+    type: fir_filter_fff
+    win: window.WIN_HAMMING
+  states:
+    coordinate: [1340,360]
+    rotation: 0
+    state: enabled
+- name: rx_vol
+  id: blocks_multiply_const_vxx
+  parameters:
+    comment: 'Speaker gain'
+    const: rx_volume
+    mode: scalar
+    type: float
+    vlen: '1'
+  states:
+    coordinate: [1510,360]
+    rotation: 0
+    state: enabled
+- name: audio_sink
+  id: audio_sink
+  parameters:
+    device_name: ''
+    num_inputs: '1'
+    ok_to_block: 'True'
+    samp_rate: samp_audio
+  states:
+    coordinate: [1680,360]
+    rotation: 0
+    state: enabled
+- name: rx_fft
+  id: qtgui_freq_sink_x
+  parameters:
+    alpha: '1.0'
+    autoscale: 'False'
+    average: '0.2'
+    axislabels: 'True'
+    bw: baseband_rate
+    fftsize: '4096'
+    freqhalf: 'True'
+    grid: 'True'
+    label: RX Baseband
+    name: RX baseband
+    nconnections: '1'
+    showports: 'False'
+    update_time: '0.10'
+    ymin: '-120'
+    ymax: '10'
+    fc: '0'
+    label1: RX
+    units: dB
+    norm_window: 'False'
+    ctrlpanel: 'False'
+    legend: 'True'
+    width1: '1'
+    alpha1: '1.0'
+    color1: '"red"'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_level: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+  states:
+    coordinate: [640,520]
+    rotation: 0
+    state: enabled
+- name: note
+  id: note
+  parameters:
+    content: 'HD DIGITAL VOICE PROFILE
+
+      16 kHz mono -> 100 Hz HPF -> 7 kHz LPF -> soft limiter
+
+      Opus: 16 kbps CBR, 20 ms frames, 40-byte payload
+
+      Framing: 16-bit sequence + CRC32
+
+      FEC: K=7 rate-1/2 convolutional code + 22x34 bit interleaver
+
+      Modem: differential Gray QPSK, 4 samples/symbol, excess BW 0.25
+
+      Coded stream: 39.2 kbps -> 19.6 ksym/s -> 78.4 kS/s baseband
+
+      Approximate occupied waveform class: 24.5 kHz
+
+      Pluto: 627.2 kS/s sample stream; hardware RF bandwidth 200 kHz
+
+      RX: software channel LPF -> QPSK timing/frequency/phase recovery -> Viterbi/CRC -> Opus PLC
+
+      Install: sudo apt install libopus0 libopus-dev && python3 -m pip install opuslib
+
+      First test with a cabled RF link and suitable attenuation. Do not connect TX directly to RX.
+
+      Use only authorized frequencies/power/duty-cycle conditions.'
+  states:
+    coordinate: [40,740]
+    rotation: 0
+    state: enabled
+
+connections:
+- [audio_src,'0',tx_dc,'0']
+- [tx_dc,'0',tx_hp,'0']
+- [tx_hp,'0',tx_lp,'0']
+- [tx_lp,'0',tx_gain,'0']
+- [tx_gain,'0',tx_limiter,'0']
+- [tx_limiter,'0',opus_enc,'0']
+- [opus_enc,'0',fec_tx,'0']
+- [fec_tx,'0',qpsk_mod,'0']
+- [qpsk_mod,'0',ptt_gate,'0']
+- [ptt_gate,'0',tx_resamp,'0']
+- [tx_resamp,'0',pluto_tx,'0']
+- [ptt_gate,'0',tx_fft,'0']
+- [pluto_rx,'0',rx_resamp,'0']
+- [rx_resamp,'0',rx_channel,'0']
+- [rx_channel,'0',rx_fft,'0']
+- [rx_channel,'0',qpsk_demod,'0']
+- [qpsk_demod,'0',fec_rx,'0']
+- [fec_rx,'0',opus_dec,'0']
+- [opus_dec,'0',rx_lp,'0']
+- [rx_lp,'0',rx_vol,'0']
+- [rx_vol,'0',audio_sink,'0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0
