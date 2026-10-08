@@ -20,14 +20,14 @@ options:
     sizing_mode: fixed
     thread_safe_setters: 'False'
     title: Pluto Digital Voice HD - Live Dashboard
-    window_size: (1600, 1000)
+    window_size: (1800, 950)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate:
-    - 0
-    - 0
+    - 40
+    - 40
     description: ''
     domain: std
     pythread: false
@@ -36,7 +36,7 @@ options:
     run_on: ''
     translation_language: none
     thread_safe_setters: false
-    title: Not titled yet
+    title: Pluto Digital Voice HD - Live Dashboard
 blocks:
 - name: samp_audio
   id: variable
@@ -271,7 +271,7 @@ blocks:
   states:
     coordinate:
     - 40
-    - 860
+    - 300
     rotation: 0
     state: enabled
 - name: tx_dc
@@ -283,8 +283,8 @@ blocks:
     type: ff
   states:
     coordinate:
-    - 180
-    - 860
+    - 170
+    - 300
     rotation: 0
     state: enabled
 - name: dashboard
@@ -315,7 +315,7 @@ blocks:
   states:
     coordinate:
     - 20
-    - 60
+    - 20
     rotation: 0
     state: enabled
 - name: tx_hp
@@ -333,8 +333,8 @@ blocks:
     win: window.WIN_HAMMING
   states:
     coordinate:
-    - 330
-    - 860
+    - 300
+    - 300
     rotation: 0
     state: enabled
 - name: tx_lp
@@ -352,8 +352,8 @@ blocks:
     win: window.WIN_HAMMING
   states:
     coordinate:
-    - 500
-    - 860
+    - 430
+    - 300
     rotation: 0
     state: enabled
 - name: tx_gain
@@ -366,8 +366,8 @@ blocks:
     mode: scalar
   states:
     coordinate:
-    - 680
-    - 860
+    - 560
+    - 300
     rotation: 0
     state: enabled
 - name: tx_limiter
@@ -385,8 +385,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 850
-    - 860
+    - 690
+    - 300
     rotation: 0
     state: enabled
 - name: opus_enc
@@ -402,8 +402,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 1030
-    - 860
+    - 820
+    - 300
     rotation: 0
     state: enabled
 - name: fec_tx
@@ -426,8 +426,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 1210
-    - 860
+    - 970
+    - 300
     rotation: 0
     state: enabled
 - name: unpack_bits_tx
@@ -440,8 +440,8 @@ blocks:
     type: byte
   states:
     coordinate:
-    - 1390
-    - 860
+    - 1120
+    - 300
     rotation: 0
     state: enabled
 - name: qpsk_symbols_tx
@@ -454,8 +454,8 @@ blocks:
     type: byte
   states:
     coordinate:
-    - 1480
-    - 860
+    - 1210
+    - 300
     rotation: 0
     state: enabled
 - name: diff_enc_tx
@@ -465,8 +465,8 @@ blocks:
     modulus: '4'
   states:
     coordinate:
-    - 1650
-    - 860
+    - 1300
+    - 300
     rotation: 0
     state: enabled
 - name: qpsk_map_tx
@@ -479,8 +479,8 @@ blocks:
     symbol_table: '[1+1j, -1+1j, -1-1j, 1-1j]'
   states:
     coordinate:
-    - 1810
-    - 860
+    - 1390
+    - 300
     rotation: 0
     state: enabled
 - name: tx_rrc
@@ -496,8 +496,8 @@ blocks:
     type: interp_fir_filter_ccf
   states:
     coordinate:
-    - 1820
-    - 860
+    - 1480
+    - 300
     rotation: 0
     state: enabled
 - name: tx_ptt_gate
@@ -510,8 +510,8 @@ blocks:
     vlen: '1'
   states:
     coordinate:
-    - 1960
-    - 860
+    - 1600
+    - 300
     rotation: 0
     state: enabled
 - name: tx_to_pluto
@@ -525,8 +525,8 @@ blocks:
     type: ccc
   states:
     coordinate:
-    - 2110
-    - 860
+    - 1710
+    - 300
     rotation: 0
     state: enabled
 - name: pluto_tx
@@ -547,8 +547,8 @@ blocks:
     uri: ''
   states:
     coordinate:
-    - 2280
-    - 860
+    - 1840
+    - 300
     rotation: 0
     state: enabled
 - name: pluto_rx
@@ -573,14 +573,14 @@ blocks:
     uri: ''
   states:
     coordinate:
-    - 80
-    - 1110
+    - 40
+    - 500
     rotation: 0
     state: enabled
 - name: rx_decim
   id: rational_resampler_xxx
   parameters:
-    comment: 684.8 kS/s -> 84.8 kS/s.
+    comment: 678.4 kS/s -> 84.8 kS/s.
     decim: '8'
     fbw: '0.45'
     interp: '1'
@@ -588,8 +588,8 @@ blocks:
     type: ccc
   states:
     coordinate:
-    - 270
-    - 1110
+    - 170
+    - 500
     rotation: 0
     state: enabled
 - name: rx_channel
@@ -607,8 +607,8 @@ blocks:
     win: window.WIN_HAMMING
   states:
     coordinate:
-    - 450
-    - 1110
+    - 300
+    - 500
     rotation: 0
     state: enabled
 - name: rx_fll
@@ -622,8 +622,8 @@ blocks:
     type: cc
   states:
     coordinate:
-    - 650
-    - 1110
+    - 450
+    - 500
     rotation: 0
     state: enabled
 - name: rx_rrc
@@ -640,8 +640,8 @@ blocks:
     type: fir_filter_ccf
   states:
     coordinate:
-    - 850
-    - 1110
+    - 600
+    - 500
     rotation: 0
     state: enabled
 - name: rx_sym
@@ -661,8 +661,8 @@ blocks:
     loop_bw: '0.03'
   states:
     coordinate:
-    - 1050
-    - 1110
+    - 780
+    - 500
     rotation: 0
     state: enabled
 - name: rx_costas
@@ -674,8 +674,8 @@ blocks:
     w: '0.01'
   states:
     coordinate:
-    - 1240
-    - 1110
+    - 950
+    - 500
     rotation: 0
     state: enabled
 - name: rx_const_dec
@@ -684,8 +684,8 @@ blocks:
     constellation: qpsk_const
   states:
     coordinate:
-    - 1420
-    - 1110
+    - 1120
+    - 500
     rotation: 0
     state: enabled
 - name: rx_diff
@@ -694,8 +694,8 @@ blocks:
     modulus: '4'
   states:
     coordinate:
-    - 1580
-    - 1110
+    - 1270
+    - 500
     rotation: 0
     state: enabled
 - name: rx_symbols_to_bits
@@ -713,8 +713,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 1740
-    - 1110
+    - 1420
+    - 500
     rotation: 0
     state: enabled
 - name: fec_rx
@@ -742,8 +742,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 1900
-    - 1110
+    - 1530
+    - 500
     rotation: 0
     state: enabled
 - name: opus_dec
@@ -759,8 +759,8 @@ blocks:
     minoutbuf: '0'
   states:
     coordinate:
-    - 2070
-    - 1110
+    - 1690
+    - 500
     rotation: 0
     state: enabled
 - name: rx_volume_block
@@ -773,8 +773,8 @@ blocks:
     mode: scalar
   states:
     coordinate:
-    - 2240
-    - 1110
+    - 1840
+    - 500
     rotation: 0
     state: enabled
 - name: audio_sink
@@ -786,8 +786,8 @@ blocks:
     samp_rate: samp_audio
   states:
     coordinate:
-    - 2400
-    - 1110
+    - 1990
+    - 500
     rotation: 0
     state: enabled
 - name: tx_fft
@@ -817,8 +817,8 @@ blocks:
     wintype: window.WIN_BLACKMAN_hARRIS
   states:
     coordinate:
-    - 1930
-    - 700
+    - 1380
+    - 50
     rotation: 0
     state: enabled
 - name: rx_fft
@@ -848,8 +848,8 @@ blocks:
     wintype: window.WIN_BLACKMAN_hARRIS
   states:
     coordinate:
-    - 470
-    - 980
+    - 950
+    - 50
     rotation: 0
     state: enabled
 - name: rx_const
@@ -882,8 +882,8 @@ blocks:
     alpha1: '1.0'
   states:
     coordinate:
-    - 1120
-    - 980
+    - 1060
+    - 50
     rotation: 0
     state: enabled
 - name: note
@@ -974,8 +974,8 @@ blocks:
     alpha10: '1'
   states:
     coordinate:
-    - 1640
-    - 980
+    - 1270
+    - 50
     rotation: 0
     state: enabled
 - name: tx_audio_time
