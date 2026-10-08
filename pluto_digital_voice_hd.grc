@@ -223,7 +223,7 @@ blocks:
     num_opts: '2'
     options: '[0, 1]'
     labels: '[]'
-    value: '0'
+    value: '1'
     option0: '0'
     label0: RX / Standby
     option1: '1'
@@ -263,6 +263,103 @@ blocks:
     coordinate: [360, 80]
     rotation: 0
     state: enabled
+- name: sim_audio_freq
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Tone frequency for no-hardware simulation.'
+    gui_hint: ''
+    label: Simulation Audio Tone (Hz)
+    min_len: '220'
+    orient: QtCore.Qt.Orientation.Horizontal
+    rangeType: float
+    start: '200'
+    step: '10'
+    stop: '3000'
+    value: '800'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 250]
+    rotation: 0
+    state: enabled
+- name: sim_audio_amp
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Simulation tone amplitude.'
+    gui_hint: ''
+    label: Simulation Audio Level
+    min_len: '220'
+    orient: QtCore.Qt.Orientation.Horizontal
+    rangeType: float
+    start: '0.05'
+    step: '0.01'
+    stop: '0.70'
+    value: '0.25'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 320]
+    rotation: 0
+    state: enabled
+- name: sim_noise
+  id: variable_qtgui_range
+  parameters:
+    comment: 'AWGN noise voltage in simulation.'
+    gui_hint: ''
+    label: Simulation Noise
+    min_len: '220'
+    orient: QtCore.Qt.Orientation.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.001'
+    stop: '0.10'
+    value: '0.0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 390]
+    rotation: 0
+    state: enabled
+- name: sim_freq_offset_hz
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Carrier offset injected by the simulated channel.'
+    gui_hint: ''
+    label: Simulation Frequency Offset (Hz)
+    min_len: '220'
+    orient: QtCore.Qt.Orientation.Horizontal
+    rangeType: float
+    start: '-2500'
+    step: '10'
+    stop: '2500'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 460]
+    rotation: 0
+    state: enabled
+- name: sim_freq_offset
+  id: variable
+  parameters:
+    comment: 'Normalized channel frequency offset.'
+    value: sim_freq_offset_hz/pluto_rate
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 530]
+    rotation: 0
+    state: enabled
+
 - name: audio_src
   id: audio_source
   parameters:
@@ -277,7 +374,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 300]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: tx_dc
   id: dc_blocker_xx
   parameters:
@@ -595,6 +692,95 @@ blocks:
     coordinate: [1710, 300]
     rotation: 0
     state: enabled
+- name: sim_audio
+  id: analog_sig_source_x
+  parameters:
+    alias: ''
+    amp: sim_audio_amp
+    comment: 'Deterministic speech-band tone used for a hardware-free end-to-end test.'
+    freq: sim_audio_freq
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_audio
+    showports: 'False'
+    type: float
+    waveform: analog.GR_SIN_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [500, 700]
+    rotation: 0
+    state: enabled
+- name: sim_rf_interp
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Simulation RF rate: 84.8 kS/s -> 339.2 kS/s.'
+    decim: '1'
+    interp: '4'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1550, 300]
+    rotation: 0
+    state: enabled
+- name: sim_throttle
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Real-time pacing for software-only test.'
+    ignoretag: 'True'
+    samples_per_second: pluto_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1710, 700]
+    rotation: 0
+    state: enabled
+- name: sim_channel
+  id: channels_channel_model
+  parameters:
+    block_tags: 'False'
+    comment: 'Software RF channel model: AWGN + carrier offset.'
+    epsilon: '1.0'
+    freq_offset: sim_freq_offset
+    noise_voltage: sim_noise
+    seed: '42'
+    taps: '[1.0+0j]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1870, 700]
+    rotation: 0
+    state: enabled
+- name: sim_rf_decim
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: 'Simulation RF rate: 339.2 kS/s -> 84.8 kS/s.'
+    decim: '4'
+    interp: '1'
+    taps: '[]'
+    type: ccc
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2030, 700]
+    rotation: 0
+    state: enabled
+
 - name: pluto_tx
   id: iio_pluto_sink
   parameters:
@@ -617,7 +803,7 @@ blocks:
     bus_structure: null
     coordinate: [1840, 300]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: pluto_rx
   id: iio_pluto_source
   parameters:
@@ -644,7 +830,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 500]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: rx_decim
   id: rational_resampler_xxx
   parameters:
@@ -995,7 +1181,7 @@ blocks:
     bus_structure: null
     coordinate: [1990, 500]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: tx_fft
   id: qtgui_freq_sink_x
   parameters:
@@ -1439,8 +1625,8 @@ blocks:
     state: enabled
 
 connections:
-- [audio_src, '0', tx_dc, '0']
-- [audio_src, '0', tx_audio_time, '0']
+- [sim_audio, '0', tx_dc, '0']
+- [sim_audio, '0', tx_audio_time, '0']
 - [tx_dc, '0', tx_hp, '0']
 - [tx_hp, '0', tx_lp, '0']
 - [tx_lp, '0', tx_gain, '0']
@@ -1453,12 +1639,15 @@ connections:
 - [qpsk_mod_tx, '0', tx_ptt_gate, '0']
 - [qpsk_mod_tx, '0', tx_fft, '0']
 - [tx_ptt_gate, '0', tx_to_pluto, '0']
-- [tx_to_pluto, '0', pluto_tx, '0']
+- [tx_to_pluto, '0', sim_rf_interp, '0']
+- [sim_rf_interp, '0', sim_throttle, '0']
+- [sim_throttle, '0', sim_channel, '0']
+- [sim_channel, '0', sim_rf_decim, '0']
+- [sim_rf_decim, '0', rx_decim, '0']
 - [tx_ptt_gate, '0', tx_mag, '0']
 - [tx_mag, '0', tx_power_add, '0']
 - [tx_power_add, '0', tx_power_db, '0']
 - [tx_power_db, '0', power_sink, '0']
-- [pluto_rx, '0', rx_decim, '0']
 - [rx_decim, '0', rx_channel, '0']
 - [rx_channel, '0', rx_fft, '0']
 - [rx_channel, '0', rx_fll, '0']
@@ -1480,6 +1669,19 @@ connections:
 - [rx_mag, '0', rx_power_add, '0']
 - [rx_power_add, '0', rx_power_db, '0']
 - [rx_power_db, '0', power_sink, '1']
+
+- name: runtime_note
+  id: note
+  parameters:
+    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 339.2 kS/s, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 600]
+    rotation: 0
+    state: enabled
+
 
 metadata:
   file_format: 1
