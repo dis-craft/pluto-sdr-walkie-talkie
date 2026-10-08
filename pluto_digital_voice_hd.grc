@@ -20,7 +20,7 @@ options:
     sizing_mode: fixed
     thread_safe_setters: 'False'
     title: Pluto Digital Voice HD - Live Dashboard
-    window_size: (1800, 950)
+    window_size: (1600, 900)
   states:
     bus_sink: false
     bus_source: false
@@ -97,7 +97,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Default is 433.92 MHz. Change only to a frequency you are authorized to use.
-    gui_hint: 'dashboard@0: 0,0,1,2'
     label: TX frequency (Hz)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -117,7 +116,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Default is 433.92 MHz. Change only to a frequency you are authorized to use.
-    gui_hint: 'dashboard@0: 1,0,1,2'
     label: RX frequency (Hz)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -137,7 +135,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Lower attenuation = higher RF output. Use only within legal power limits.
-    gui_hint: 'dashboard@0: 2,0,1,2'
     label: TX attenuation (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -157,7 +154,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Start around 38 dB and increase only as needed.
-    gui_hint: 'dashboard@0: 3,0,1,2'
     label: RX manual gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -177,7 +173,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Digital microphone gain before compression.
-    gui_hint: 'dashboard@0: 4,0,1,2'
     label: Microphone gain
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -197,7 +192,6 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: Post-decoder speaker gain.
-    gui_hint: 'dashboard@0: 5,0,1,2'
     label: RX volume
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -234,7 +228,6 @@ blocks:
     label4: ''
     widget: radio_buttons
     orient: QtWidgets.QHBoxLayout
-    gui_hint: 'dashboard@0: 6,0,1,2'
   states:
     coordinate:
     - 80
@@ -285,37 +278,6 @@ blocks:
     coordinate:
     - 170
     - 300
-    rotation: 0
-    state: enabled
-- name: dashboard
-  id: qtgui_tab_widget
-  parameters:
-    gui_hint: 0,0,1,2
-    label0: Controls
-    label1: RF Spectrum
-    label2: Modem
-    label3: Audio
-    label4: System Notes
-    label5: Tab 5
-    label6: Tab 6
-    label7: Tab 7
-    label8: Tab 8
-    label9: Tab 9
-    label10: Tab 10
-    label11: Tab 11
-    label12: Tab 12
-    label13: Tab 13
-    label14: Tab 14
-    label15: Tab 15
-    label16: Tab 16
-    label17: Tab 17
-    label18: Tab 18
-    label19: Tab 19
-    num_tabs: '5'
-  states:
-    coordinate:
-    - 20
-    - 20
     rotation: 0
     state: enabled
 - name: tx_hp
@@ -805,7 +767,6 @@ blocks:
     fftsize: '4096'
     freqhalf: 'True'
     grid: 'True'
-    gui_hint: 'dashboard@1: 0,0,1,1'
     label: TX baseband spectrum
     name: TX baseband
     nconnections: '1'
@@ -836,7 +797,6 @@ blocks:
     fftsize: '4096'
     freqhalf: 'True'
     grid: 'True'
-    gui_hint: 'dashboard@1: 0,1,1,1'
     label: RX filtered spectrum
     name: RX filtered
     nconnections: '1'
@@ -866,7 +826,6 @@ blocks:
     xmax: '1.5'
     nconnections: '1'
     update_time: '0.10'
-    gui_hint: 'dashboard@2: 0,0,1,1'
     tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
     tr_level: '0.0'
@@ -889,13 +848,13 @@ blocks:
 - name: note
   id: note
   parameters:
-    content: 'FINAL DIGITAL VOICE
+    content: 'PLUTO DIGITAL VOICE HD - WORKING BUILD
 
 
       16 kHz mono -> Opus 16 kbps CBR / 20 ms -> CRC32 -> K=7 rate-1/2 FEC -> 22x34 interleave -> preamble + sync -> differential Gray QPSK -> RRC alpha 0.25.
 
 
-      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 684.8 kS/s. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
+      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 678.4 kS/s. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
 
 
       RX: software channel LPF -> FLL -> RRC/Gardner -> Costas -> constellation -> differential decode -> frame sync -> Viterbi -> CRC -> Opus PLC -> speaker.
@@ -922,7 +881,6 @@ blocks:
     xmax: '1.5'
     nconnections: '1'
     update_time: '0.10'
-    gui_hint: 'dashboard@2: 1,0,1,1'
     tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
     tr_level: '0'
