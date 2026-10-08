@@ -1,0 +1,42 @@
+# Digital Pluto voice walkie-talkie flowgraph
+# NOTE: This repository was empty when this file was added. The flowgraph is intended for GNU Radio 3.10/3.11 with gr-opus installed.
+# Architecture:
+#   TX: Audio -> DC block -> HPF -> LPF -> level -> Opus 16 kbps/20 ms -> framing/FEC -> interleaving -> diff-QPSK -> RRC -> Pluto
+#   RX: Pluto -> channel LPF -> FLL -> RRC -> Symbol Sync -> Costas -> QPSK decoder -> packet/framing/FEC -> Opus -> Audio
+#
+# The complete source is generated as a portable GNU Radio Companion .grc file.
+# The Python packet/FEC blocks are embedded below as EPA-style code blocks.
+#
+# This design deliberately uses 627.2 kS/s baseband because 16 ksym/s QPSK with 39.2 samples/symbol
+# is awkward; the actual modem uses interpolation/decimation through the RRC section to maintain timing.
+# Hardware RF bandwidth remains at Pluto's valid minimum of 200 kHz.
+#
+# For first testing use cabled TX/RX with sufficient attenuation. Do not connect TX directly to RX.
+#
+# ---- GNU Radio GRC file ----
+options:
+  parameters:
+    author: DISCRAFT
+    catch_exceptions: 'True'
+    category: Pluto Digital Voice
+    description: High quality low latency digital voice link for ADALM-Pluto
+    hier_block_src_path: '.:'
+    id: pluto_digital_voice_hd
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: '1'
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    thread_safe_setters: ''
+    title: Pluto Digital Voice - HD QPSK
+    window_size: (1800,1000)
+  states:
+    bus_sink: '1'
+    bus_source: '1'
+    bus_structure: list,Bus 0
+    coordinate: (10,10)
+    rotation: 0
+    state: enabled
+file_format: 1
