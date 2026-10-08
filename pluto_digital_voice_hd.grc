@@ -942,3 +942,374 @@ blocks:
     type: float
     name: '''TX Microphone'''
     ylabel: Amplitude
+    yunit: '""'
+    size: '4000'
+    srate: samp_audio
+    grid: 'True'
+    autoscale: 'False'
+    ymin: '-1'
+    ymax: '1'
+    nconnections: '1'
+    update_time: '0.10'
+    entags: 'False'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_level: '0'
+    tr_delay: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+    ctrlpanel: 'False'
+    legend: 'True'
+    axislabels: 'True'
+    stemplot: 'False'
+    label1: Mic
+    width1: '1'
+    color1: blue
+    style1: '1'
+    marker1: '-1'
+    alpha1: '1.0'
+    label2: ''
+    width2: '1'
+    color2: red
+    style2: '1'
+    marker2: '-1'
+    alpha2: '1.0'
+    label3: ''
+    width3: '1'
+    color3: green
+    style3: '1'
+    marker3: '-1'
+    alpha3: '1.0'
+    label4: ''
+    width4: '1'
+    color4: black
+    style4: '1'
+    marker4: '-1'
+    alpha4: '1.0'
+    label5: ''
+    width5: '1'
+    color5: cyan
+    style5: '1'
+    marker5: '-1'
+    alpha5: '1.0'
+    label6: ''
+    width6: '1'
+    color6: magenta
+    style6: '1'
+    marker6: '-1'
+    alpha6: '1.0'
+    label7: ''
+    width7: '1'
+    color7: yellow
+    style7: '1'
+    marker7: '-1'
+    alpha7: '1.0'
+    label8: ''
+    width8: '1'
+    color8: 'dark red'
+    style8: '1'
+    marker8: '-1'
+    alpha8: '1.0'
+    label9: ''
+    width9: '1'
+    color9: 'dark green'
+    style9: '1'
+    marker9: '-1'
+    alpha9: '1.0'
+    label10: ''
+    width10: '1'
+    color10: 'dark blue'
+    style10: '1'
+    marker10: '-1'
+    alpha10: '1.0'
+  states:
+    coordinate:
+    - 300
+    - 720
+    rotation: 0
+    state: enabled
+- name: rx_audio_time
+  id: qtgui_time_sink_x
+  parameters:
+    type: float
+    name: '"RX Audio"'
+    ylabel: Amplitude
+    yunit: '""'
+    size: '4000'
+    srate: samp_audio
+    grid: 'True'
+    autoscale: 'False'
+    ymin: '-1'
+    ymax: '1'
+    nconnections: '1'
+    update_time: '0.10'
+    entags: 'False'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_level: '0'
+    tr_delay: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+    ctrlpanel: 'False'
+    legend: 'True'
+    axislabels: 'True'
+    stemplot: 'False'
+    label1: RX
+    width1: '1'
+    color1: red
+    style1: '1'
+    marker1: '-1'
+    alpha1: '1.0'
+  states:
+    coordinate:
+    - 700
+    - 720
+    rotation: 0
+    state: enabled
+- name: fll_time
+  id: qtgui_time_sink_x
+  parameters:
+    type: float
+    name: '"FLL estimate"'
+    ylabel: 'Frequency estimate'
+    yunit: normalized
+    size: '2000'
+    srate: baseband_rate
+    grid: 'True'
+    autoscale: 'True'
+    ymin: '-0.2'
+    ymax: '0.2'
+    nconnections: '1'
+    update_time: '0.10'
+    entags: 'False'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_level: '0'
+    tr_delay: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+    ctrlpanel: 'False'
+    legend: 'True'
+    axislabels: 'True'
+    stemplot: 'False'
+    label1: FLL
+    width1: '1'
+    color1: green
+    style1: '1'
+    marker1: '-1'
+    alpha1: '1.0'
+  states:
+    coordinate:
+    - 1050
+    - 720
+    rotation: 0
+    state: enabled
+- name: tx_mag
+  id: blocks_complex_to_mag_squared
+  parameters:
+    vlen: '1'
+  states:
+    coordinate:
+    - 1500
+    - 190
+    rotation: 0
+    state: enabled
+- name: tx_power_add
+  id: blocks_add_const_vxx
+  parameters:
+    type: float
+    const: '1e-12'
+    vlen: '1'
+  states:
+    coordinate:
+    - 1560
+    - 190
+    rotation: 0
+    state: enabled
+- name: tx_power_db
+  id: blocks_nlog10_ff
+  parameters:
+    n: '10'
+    k: '0'
+    vlen: '1'
+  states:
+    coordinate:
+    - 1620
+    - 190
+    rotation: 0
+    state: enabled
+- name: rx_mag
+  id: blocks_complex_to_mag_squared
+  parameters:
+    vlen: '1'
+  states:
+    coordinate:
+    - 640
+    - 620
+    rotation: 0
+    state: enabled
+- name: rx_power_add
+  id: blocks_add_const_vxx
+  parameters:
+    type: float
+    const: '1e-12'
+    vlen: '1'
+  states:
+    coordinate:
+    - 710
+    - 620
+    rotation: 0
+    state: enabled
+- name: rx_power_db
+  id: blocks_nlog10_ff
+  parameters:
+    n: '10'
+    k: '0'
+    vlen: '1'
+  states:
+    coordinate:
+    - 780
+    - 620
+    rotation: 0
+    state: enabled
+- name: power_sink
+  id: qtgui_number_sink
+  parameters:
+    name: '"Baseband Power"'
+    type: float
+    autoscale: 'False'
+    avg: '0.1'
+    graph_type: qtgui.NUM_GRAPH_VERT
+    nconnections: '2'
+    min: '-120'
+    max: '5'
+    update_time: '0.20'
+    label1: TX
+    unit1: dBFS
+    factor1: '1'
+    label2: RX
+    unit2: dBFS
+    factor2: '1'
+    label3: ''
+    unit3: ''
+    factor3: '1'
+    label4: ''
+    unit4: ''
+    factor4: '1'
+    label5: ''
+    unit5: ''
+    factor5: '1'
+    label6: ''
+    unit6: ''
+    factor6: '1'
+    label7: ''
+    unit7: ''
+    factor7: '1'
+    label8: ''
+    unit8: ''
+    factor8: '1'
+    label9: ''
+    unit9: ''
+    factor9: '1'
+    label10: ''
+    unit10: ''
+    factor10: '1'
+  states:
+    coordinate:
+    - 1720
+    - 620
+    rotation: 0
+    state: enabled
+- name: rx_const_sink
+  id: qtgui_const_sink_x
+  parameters:
+    type: complex
+    name: '"RX QPSK Constellation"'
+    size: '2048'
+    grid: 'True'
+    autoscale: 'False'
+    ymin: '-1.5'
+    ymax: '1.5'
+    xmin: '-1.5'
+    xmax: '1.5'
+    nconnections: '1'
+    update_time: '0.10'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_level: '0'
+    tr_chan: '0'
+    tr_tag: '""'
+    legend: 'True'
+    axislabels: 'True'
+    label1: Symbols
+    width1: '1'
+    color1: blue
+    style1: '0'
+    marker1: '0'
+    alpha1: '1.0'
+    label2: ''
+    width2: '1'
+    color2: red
+    style2: '0'
+    marker2: '-1'
+    alpha2: '0'
+  states:
+    coordinate:
+    - 1420
+    - 720
+    rotation: 0
+    state: enabled
+- name: note2
+  id: note
+  parameters:
+    content: 'Wiring is restored in this build. If you opened an older local copy, remove it and pull the root pluto_digital_voice_hd.grc again.'
+  states:
+    coordinate:
+    - 40
+    - 820
+    rotation: 0
+    state: enabled
+connections:
+- [audio_src, '0', tx_dc, '0']
+- [audio_src, '0', tx_audio_time, '0']
+- [tx_dc, '0', tx_hp, '0']
+- [tx_hp, '0', tx_lp, '0']
+- [tx_lp, '0', tx_gain, '0']
+- [tx_gain, '0', tx_limiter, '0']
+- [tx_limiter, '0', opus_enc, '0']
+- [opus_enc, '0', fec_tx, '0']
+- [fec_tx, '0', unpack_bits_tx, '0']
+- [unpack_bits_tx, '0', qpsk_symbols_tx, '0']
+- [qpsk_symbols_tx, '0', diff_enc_tx, '0']
+- [diff_enc_tx, '0', qpsk_map_tx, '0']
+- [qpsk_map_tx, '0', tx_const, '0']
+- [qpsk_map_tx, '0', tx_rrc, '0']
+- [tx_rrc, '0', tx_ptt_gate, '0']
+- [tx_ptt_gate, '0', tx_to_pluto, '0']
+- [tx_to_pluto, '0', pluto_tx, '0']
+- [tx_ptt_gate, '0', tx_mag, '0']
+- [tx_mag, '0', tx_power_add, '0']
+- [tx_power_add, '0', tx_power_db, '0']
+- [tx_power_db, '0', power_sink, '0']
+- [pluto_rx, '0', rx_decim, '0']
+- [rx_decim, '0', rx_channel, '0']
+- [rx_channel, '0', rx_fft, '0']
+- [rx_channel, '0', rx_fll, '0']
+- [rx_fll, '0', rx_rrc, '0']
+- [rx_fll, '1', fll_time, '0']
+- [rx_rrc, '0', rx_sym, '0']
+- [rx_sym, '0', rx_costas, '0']
+- [rx_costas, '0', rx_const_dec, '0']
+- [rx_costas, '0', rx_const_sink, '0']
+- [rx_const_dec, '0', rx_diff, '0']
+- [rx_diff, '0', rx_symbols_to_bits, '0']
+- [rx_symbols_to_bits, '0', fec_rx, '0']
+- [fec_rx, '0', opus_dec, '0']
+- [opus_dec, '0', rx_audio_time, '0']
+- [opus_dec, '0', rx_lp, '0']
+- [rx_lp, '0', rx_vol, '0']
+- [rx_vol, '0', audio_sink, '0']
+- [rx_channel, '0', rx_mag, '0']
+- [rx_mag, '0', rx_power_add, '0']
+- [rx_power_add, '0', rx_power_db, '0']
+- [rx_power_db, '0', power_sink, '1']
