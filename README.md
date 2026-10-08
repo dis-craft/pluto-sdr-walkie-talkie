@@ -1,7 +1,7 @@
 # DISCRAFT Pluto SDR Digital Voice Walkie-Talkie
 
 <p align="center">
-  <img src="Pasted%20image.png" alt="GNU Radio Companion flowgraph" width="1000">
+  <img src="docs/architecture.svg" alt="DISCRAFT digital voice modem architecture" width="1000">
 </p>
 
 <p align="center">
@@ -1353,24 +1353,22 @@ For initial modem validation, software simulation and an appropriately attenuate
 
 # 34. Repository structure
 
-The most important files are:
+The repository intentionally keeps only the files needed to understand and run the project:
 
 ```text
 .
 ├── README.md
-├── Pasted image.png
-├── pluto_digital_voice_hd.grc
-├── pluto_discraft_digital_voice_final.py
-├── pluto_discraft_digital_voice_final_fec_rx.py
-├── pluto_discraft_digital_voice_final_fec_tx.py
-├── pluto_discraft_digital_voice_final_opus_dec.py
-├── pluto_discraft_digital_voice_final_opus_enc.py
-└── pluto_discraft_digital_voice_final_tx_limiter.py
+├── .gitignore
+├── docs/
+│   └── architecture.svg
+└── pluto_digital_voice_hd.grc
 ```
 
-The GRC file is the canonical source for the GNU Radio design.
+### Why there are no generated Python files
 
-The generated Python and separated helper files are useful when inspecting or debugging the embedded processing implementation, but the flowgraph is the primary design artifact.
+The canonical GRC embeds the custom Python processing blocks directly inside the flowgraph. The previously generated `.py` and `.pyc` artifacts were redundant build/runtime outputs rather than required project sources, so they are not kept in the repository.
+
+This keeps the repository reproducible and avoids committing generated files that can become stale relative to the GRC design.
 
 ---
 
