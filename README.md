@@ -35,8 +35,8 @@ Ubuntu/Debian example:
 
 ```bash
 sudo apt update
-sudo apt install gnuradio gr-iio libopus0 libopus-dev python3-pip
-python3 -m pip install --user opuslib
+sudo apt install gnuradio gr-iio libopus0
+
 ```
 
 On a distribution enforcing an externally managed Python environment, use an appropriate virtual environment or distro package for `opuslib`.
