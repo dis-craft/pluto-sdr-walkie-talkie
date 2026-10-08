@@ -427,7 +427,7 @@ blocks:
     bus_structure: null
     coordinate: [500, 700]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: sim_throttle
   id: blocks_throttle
   parameters:
@@ -465,7 +465,7 @@ blocks:
 - name: audio_src
   id: audio_source
   parameters:
-    comment: '16 kHz mono speech capture.'
+    comment: 'LIVE 16 kHz mono microphone input.'
     device_name: ''
     num_outputs: '1'
     ok_to_block: 'True'
@@ -476,7 +476,7 @@ blocks:
     bus_structure: null
     coordinate: [40, 300]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tx_dc
   id: dc_blocker_xx
   parameters:
@@ -1200,7 +1200,7 @@ blocks:
     bus_structure: null
     coordinate: [1990, 500]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: tx_fft
   id: qtgui_freq_sink_x
   parameters:
@@ -1290,7 +1290,7 @@ blocks:
   id: qtgui_time_sink_x
   parameters:
     type: float
-    name: '''TX Microphone'''
+    name: '''LIVE Microphone'''
     ylabel: Amplitude
     yunit: '""'
     size: '4000'
@@ -1312,7 +1312,7 @@ blocks:
     legend: 'True'
     axislabels: 'True'
     stemplot: 'False'
-    label1: Mic
+    label1: LIVE Mic
     width1: '1'
     color1: blue
     style1: '1'
@@ -1647,7 +1647,7 @@ blocks:
 - name: runtime_note
   id: note
   parameters:
-    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 1.696 MSPS, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+    content: 'DEFAULT = LIVE MICROPHONE + SOFTWARE RF SIMULATION. The graph intentionally runs without a Pluto connected: the real system microphone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 1.696 MSPS, passed through the software AWGN + carrier-offset channel, decimated, synchronized and decoded, then displayed on live RX spectrum/constellation/FLL/power/audio views and played through the system audio output. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are LIVE. The deterministic 800 Hz tone remains only as a disabled fallback. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
   states:
     bus_sink: false
     bus_source: false
@@ -1659,7 +1659,7 @@ blocks:
 - name: simulation_note
   id: note
   parameters:
-    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the digital voice TX path, interpolates the 84.8 kS/s modem to the same 1.696 MSPS stream used by the Pluto blocks, passes it through AWGN + carrier offset, decimates back to 84.8 kS/s, then runs FLL/timing/Costas/QPSK/FEC/Opus RX and the live visualizations. Pluto TX and Pluto RX are retained in the graph but DISABLED by default. Audio Source and Audio Sink are also disabled in simulation. Hardware notes: the Pluto is a 1x1 RF implementation of the AD9363 with separate TX/RX SMA ports; for best portable performance use a tuned external antenna rather than the supplied stock antenna at UHF. At 433 MHz a quarter-wave element is about 17.3 cm and a half-wave dipole is about 34.6 cm total; final dimensions require matching/velocity-factor adjustment and a usable ground plane. Later, enable the Pluto blocks and disable the simulation link. For same-antenna half-duplex operation an external RF T/R switch is needed; otherwise keep TX and RX antennas isolated.'
+    content: 'DEFAULT RUN MODE: LIVE MICROPHONE + SOFTWARE RF CHANNEL. No Pluto is required. The real microphone, runs the digital voice TX path, interpolates the 84.8 kS/s modem to the same 1.696 MSPS stream used by the Pluto blocks, passes it through AWGN + carrier offset, decimates back to 84.8 kS/s, then runs FLL/timing/Costas/QPSK/FEC/Opus RX and the live visualizations. Pluto TX and Pluto RX are retained in the graph but DISABLED by default. Audio Source and Audio Sink are enabled for live voice input/output. Hardware notes: the Pluto is a 1x1 RF implementation of the AD9363 with separate TX/RX SMA ports; for best portable performance use a tuned external antenna rather than the supplied stock antenna at UHF. At 433 MHz a quarter-wave element is about 17.3 cm and a half-wave dipole is about 34.6 cm total; final dimensions require matching/velocity-factor adjustment and a usable ground plane. Later, enable the Pluto blocks and disable the simulation link. For same-antenna half-duplex operation an external RF T/R switch is needed; otherwise keep TX and RX antennas isolated.'
   states:
     bus_sink: false
     bus_source: false
@@ -1669,8 +1669,8 @@ blocks:
     state: enabled
 
 connections:
-- [sim_audio, '0', tx_dc, '0']
-- [sim_audio, '0', tx_audio_time, '0']
+- [audio_src, '0', tx_dc, '0']
+- [audio_src, '0', tx_audio_time, '0']
 - [tx_dc, '0', tx_hp, '0']
 - [tx_hp, '0', tx_lp, '0']
 - [tx_lp, '0', tx_gain, '0']
