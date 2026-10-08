@@ -106,7 +106,7 @@ blocks:
     start: '70000000'
     step: '1000'
     stop: '6000000000'
-    value: '433920000'
+    value: '467840000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -126,7 +126,7 @@ blocks:
     start: '70000000'
     step: '1000'
     stop: '6000000000'
-    value: '433920000'
+    value: '467840000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -712,23 +712,6 @@ blocks:
     coordinate: [500, 700]
     rotation: 0
     state: enabled
-- name: sim_rf_interp
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'Simulation RF rate: 84.8 kS/s -> 339.2 kS/s.'
-    decim: '1'
-    interp: '4'
-    taps: '[]'
-    type: ccc
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1550, 300]
-    rotation: 0
-    state: enabled
 - name: sim_throttle
   id: blocks_throttle
   parameters:
@@ -763,24 +746,6 @@ blocks:
     coordinate: [1870, 700]
     rotation: 0
     state: enabled
-- name: sim_rf_decim
-  id: rational_resampler_xxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'Simulation RF rate: 339.2 kS/s -> 84.8 kS/s.'
-    decim: '4'
-    interp: '1'
-    taps: '[]'
-    type: ccc
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [2030, 700]
-    rotation: 0
-    state: enabled
-
 - name: pluto_tx
   id: iio_pluto_sink
   parameters:
@@ -1639,11 +1604,9 @@ connections:
 - [qpsk_mod_tx, '0', tx_ptt_gate, '0']
 - [qpsk_mod_tx, '0', tx_fft, '0']
 - [tx_ptt_gate, '0', tx_to_pluto, '0']
-- [tx_to_pluto, '0', sim_rf_interp, '0']
-- [sim_rf_interp, '0', sim_throttle, '0']
+- [tx_to_pluto, '0', sim_throttle, '0']
 - [sim_throttle, '0', sim_channel, '0']
-- [sim_channel, '0', sim_rf_decim, '0']
-- [sim_rf_decim, '0', rx_decim, '0']
+- [sim_channel, '0', rx_decim, '0']
 - [tx_ptt_gate, '0', tx_mag, '0']
 - [tx_mag, '0', tx_power_add, '0']
 - [tx_power_add, '0', tx_power_db, '0']
@@ -1673,7 +1636,19 @@ connections:
 - name: runtime_note
   id: note
   parameters:
-    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 339.2 kS/s, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 678.4 kS/s, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 600]
+    rotation: 0
+    state: enabled
+
+- name: simulation_note
+  id: note
+  parameters:
+    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the complete digital TX path, interpolates to the same 678.4 kS/s stream used by Pluto, passes it through an AWGN + carrier-offset channel model, then runs the complete RX synchronization/FEC/Opus path and live visualizations. Pluto TX and Pluto RX blocks remain in the graph but are disabled. Audio source and sink are disabled in simulation. Later, enable the Pluto blocks, disable the simulation channel path, and use the real hardware path. Use an appropriate attenuator for cabled RF testing and comply with local RF rules.'
   states:
     bus_sink: false
     bus_source: false
