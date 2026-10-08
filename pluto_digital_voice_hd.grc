@@ -725,6 +725,25 @@ blocks:
     - 500
     rotation: 0
     state: enabled
+- name: rx_audio_lp
+  id: low_pass_filter
+  parameters:
+    beta: '6.76'
+    comment: Final 7 kHz speech low-pass after Opus decode.
+    cutoff_freq: '7000'
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    samp_rate: samp_audio
+    width: '500'
+    type: fir_filter_fff
+    win: window.WIN_HAMMING
+  states:
+    coordinate:
+    - 1680
+    - 500
+    rotation: 0
+    state: enabled
 - name: rx_volume_block
   id: blocks_multiply_const_vxx
   parameters:
@@ -1306,9 +1325,9 @@ connections:
 - [rx_symbols_to_bits, '0', fec_rx, '0']
 - [fec_rx, '0', opus_dec, '0']
 - [opus_dec, '0', rx_audio_time, '0']
-- [opus_dec, '0', rx_lp, '0']
-- [rx_lp, '0', rx_vol, '0']
-- [rx_vol, '0', audio_sink, '0']
+- [opus_dec, '0', rx_audio_lp, '0']
+- [rx_audio_lp, '0', rx_volume_block, '0']
+- [rx_volume_block, '0', audio_sink, '0']
 - [rx_channel, '0', rx_mag, '0']
 - [rx_mag, '0', rx_power_add, '0']
 - [rx_power_add, '0', rx_power_db, '0']
