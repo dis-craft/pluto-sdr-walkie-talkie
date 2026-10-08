@@ -370,21 +370,125 @@ blocks:
 - name: opus_enc
   id: epy_block
   parameters:
-    _source_code: "import ctypes\nimport ctypes.util\nimport numpy as np\nfrom gnuradio import gr\n\nOPUS_APPLICATION_VOIP = 2048\nOPUS_SET_BITRATE_REQUEST = 4002\nOPUS_SET_VBR_REQUEST = 4006\nOPUS_SET_COMPLEXITY_REQUEST = 4010\n\nclass blk(gr.basic_block):\n    \\\"\\\"\\\"Opus 16 kHz mono, 16 kbps CBR, 20 ms frames via libopus C API.\\\"\\\"\\\"\n    def __init__(self):\n        gr.basic_block.__init__(self, name=\\\"opus_cbr_encoder_16k\\\", in_sig=[np.float32], out_sig=[np.uint8])\n        libname = ctypes.util.find_library(\\\"opus\\\") or \\\"libopus.so.0\\\"\n        self.lib = ctypes.CDLL(libname)\n        self.lib.opus_encoder_create.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_int)]\n        self.lib.opus_encoder_create.restype = ctypes.c_void_p\n        self.lib.opus_encoder_ctl.restype = ctypes.c_int\n        self.lib.opus_encode.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int16), ctypes.c_int, ctypes.POINTER(ctypes.c_ubyte), ctypes.c_int]\n        self.lib.opus_encode.restype = ctypes.c_int\n        self.lib.opus_encoder_destroy.argtypes = [ctypes.c_void_p]\n        err = ctypes.c_int()\n        self.enc = self.lib.opus_encoder_create(16000, 1, OPUS_APPLICATION_VOIP, ctypes.byref(err))\n        if not self.enc or err.value != 0:\n            raise RuntimeError(\\\"libopus encoder creation failed (error %d)\\\" % err.value)\n        for req, val in ((OPUS_SET_BITRATE_REQUEST,16000),(OPUS_SET_VBR_REQUEST,0),(OPUS_SET_COMPLEXITY_REQUEST,10)):\n            if self.lib.opus_encoder_ctl(self.enc, ctypes.c_int(req), ctypes.c_int(val)) != 0:\n                raise RuntimeError(\\\"libopus encoder control request %d failed\\\" % req)\n        self.frame=320; self.packet_bytes=40; self.buf=np.empty(0,dtype=np.float32)\n    def stop(self):\n        if getattr(self,\\\"enc\\\",None): self.lib.opus_encoder_destroy(self.enc); self.enc=None\n        return super().stop()\n    def general_work(self,input_items,output_items):\n        x=input_items[0]\n        if len(x): self.buf=np.concatenate((self.buf,x.astype(np.float32,copy=False))); self.consume(0,len(x))\n        out=output_items[0]; n=min(len(self.buf)//self.frame,len(out)//self.packet_bytes)\n        if n<=0: return 0\n        p=0\n        for i in range(n):\n            pcm=np.clip(self.buf[i*320:(i+1)*320],-1.0,1.0)\n            pcm16=(pcm*32767.0).astype(np.int16)\n            obuf=(ctypes.c_ubyte*4000)()\n            nb=self.lib.opus_encode(self.enc,pcm16.ctypes.data_as(ctypes.POINTER(ctypes.c_int16)),320,obuf,4000)\n            if nb != 40: raise RuntimeError(\\\"libopus returned %d bytes; expected 40 for 16 kbps CBR/20 ms\\\" % nb)\n            out[p:p+40]=np.frombuffer(bytes(obuf[:40]),dtype=np.uint8); p+=40\n        self.buf=self.buf[n*320:]\n        return p\n"
+    _source_code: |-
+      import ctypes
+      import ctypes.util
+      import numpy as np
+      from gnuradio import gr
+
+      OPUS_APPLICATION_VOIP = 2048
+      OPUS_SET_BITRATE_REQUEST = 4002
+      OPUS_SET_VBR_REQUEST = 4006
+      OPUS_SET_COMPLEXITY_REQUEST = 4010
+
+      class blk(gr.basic_block):
+          def __init__(self):
+              gr.basic_block.__init__(
+                  self,
+                  name='opus_cbr_encoder_16k',
+                  in_sig=[np.float32],
+                  out_sig=[np.uint8]
+              )
+              libname = ctypes.util.find_library('opus') or 'libopus.so.0'
+              self.lib = ctypes.CDLL(libname)
+              self.lib.opus_encoder_create.argtypes = [
+                  ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                  ctypes.POINTER(ctypes.c_int)
+              ]
+              self.lib.opus_encoder_create.restype = ctypes.c_void_p
+              self.lib.opus_encoder_ctl.restype = ctypes.c_int
+              self.lib.opus_encode.argtypes = [
+                  ctypes.c_void_p,
+                  ctypes.POINTER(ctypes.c_int16),
+                  ctypes.c_int,
+                  ctypes.POINTER(ctypes.c_ubyte),
+                  ctypes.c_int
+              ]
+              self.lib.opus_encode.restype = ctypes.c_int
+              self.lib.opus_encoder_destroy.argtypes = [ctypes.c_void_p]
+              err = ctypes.c_int()
+              self.enc = self.lib.opus_encoder_create(
+                  16000, 1, OPUS_APPLICATION_VOIP, ctypes.byref(err)
+              )
+              if not self.enc or err.value != 0:
+                  raise RuntimeError(
+                      'libopus encoder creation failed (error %d)' % err.value
+                  )
+              for req, val in (
+                  (OPUS_SET_BITRATE_REQUEST, 16000),
+                  (OPUS_SET_VBR_REQUEST, 0),
+                  (OPUS_SET_COMPLEXITY_REQUEST, 10)
+              ):
+                  rc = self.lib.opus_encoder_ctl(
+                      self.enc, ctypes.c_int(req), ctypes.c_int(val)
+                  )
+                  if rc != 0:
+                      raise RuntimeError(
+                          'libopus encoder control request %d failed' % req
+                      )
+              self.frame = 320
+              self.packet_bytes = 40
+              self.buf = np.empty(0, dtype=np.float32)
+
+          def stop(self):
+              if getattr(self, 'enc', None):
+                  self.lib.opus_encoder_destroy(self.enc)
+                  self.enc = None
+              return super().stop()
+
+          def general_work(self, input_items, output_items):
+              x = input_items[0]
+              if len(x):
+                  self.buf = np.concatenate(
+                      (self.buf, x.astype(np.float32, copy=False))
+                  )
+                  self.consume(0, len(x))
+              out = output_items[0]
+              n = min(len(self.buf) // self.frame,
+                      len(out) // self.packet_bytes)
+              if n <= 0:
+                  return 0
+              p = 0
+              for i in range(n):
+                  pcm = np.clip(
+                      self.buf[i*self.frame:(i+1)*self.frame],
+                      -1.0, 1.0
+                  )
+                  pcm16 = (pcm * 32767.0).astype(np.int16)
+                  obuf = (ctypes.c_ubyte * 4000)()
+                  nb = self.lib.opus_encode(
+                      self.enc,
+                      pcm16.ctypes.data_as(ctypes.POINTER(ctypes.c_int16)),
+                      self.frame,
+                      obuf,
+                      4000
+                  )
+                  if nb != self.packet_bytes:
+                      raise RuntimeError(
+                          'libopus returned %d bytes; expected 40 for 16 kbps CBR/20 ms'
+                          % nb
+                      )
+                  out[p:p+self.packet_bytes] = np.frombuffer(
+                      bytes(obuf[:self.packet_bytes]), dtype=np.uint8
+                  )
+                  p += self.packet_bytes
+              self.buf = self.buf[n*self.frame:]
+              return p
     _window_size: '0'
-    comment: '16 kHz mono Opus 16 kbps CBR, 20 ms using system libopus; no opuslib Python package required.'
+    comment: '16 kHz mono Opus 16 kbps CBR, 20 ms using system libopus.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ('opus_cbr_encoder_16k', 'blk', [], [('0', 'float', 1)], [('0', 'byte', 1)], '16 kHz mono Opus 16 kbps CBR, 20 ms using system libopus; no opuslib Python package required.', [])
+    _io_cache: ('opus_cbr_encoder_16k', 'blk', [], [('0', 'float', 1)], [('0', 'byte', 1)], '16 kHz mono Opus CBR.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [820, 300]
     rotation: 0
     state: enabled
+
 - name: fec_tx
   id: epy_block
   parameters:
@@ -440,11 +544,18 @@ blocks:
     coordinate: [1210, 300]
     rotation: 0
     state: enabled
-- name: diff_enc_tx
-  id: digital_diff_encoder_bb
+- name: qpsk_mod_tx
+  id: digital_constellation_modulator
   parameters:
-    coding: digital.DIFF_DIFFERENTIAL
-    modulus: '4'
+    affinity: ''
+    alias: ''
+    constellation: qpsk_const
+    differential: 'True'
+    excess_bw: '0.25'
+    log: 'False'
+    samples_per_symbol: '4'
+    truncate: 'False'
+    verbose: 'False'
   states:
     bus_sink: false
     bus_source: false
@@ -452,39 +563,7 @@ blocks:
     coordinate: [1300, 300]
     rotation: 0
     state: enabled
-- name: qpsk_map_tx
-  id: digital_chunks_to_symbols_xx
-  parameters:
-    dimension: '1'
-    in_type: byte
-    num_ports: '1'
-    out_type: complex
-    symbol_table: '[1+1j, -1+1j, -1-1j, 1-1j]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1390, 300]
-    rotation: 0
-    state: enabled
-- name: tx_rrc
-  id: root_raised_cosine_filter
-  parameters:
-    alpha: '0.25'
-    comment: 'Interpolating RRC: 21.2 ksym/s -> 84.8 kS/s.'
-    gain: '1'
-    interp: '4'
-    ntaps: '161'
-    samp_rate: baseband_rate
-    sym_rate: sym_rate
-    type: interp_fir_filter_ccf
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1480, 300]
-    rotation: 0
-    state: enabled
+
 - name: tx_ptt_gate
   id: blocks_multiply_const_vxx
   parameters:
@@ -696,25 +775,25 @@ blocks:
     rotation: 0
     state: enabled
 - name: rx_symbols_to_bits
-  id: epy_block
+  id: blocks_packed_to_unpacked_xx
   parameters:
-    _source_code: "import numpy as np\nfrom gnuradio import gr\n\nclass blk(gr.sync_interpolator):\n    \"\"\"Convert QPSK symbol index 0..3 into two MSB-first bit items.\"\"\"\n    def __init__(self):\n\
-      \        gr.sync_interpolator.__init__(self, name=\"qpsk_symbols_to_bits\",\n                                       interp=2, in_sig=[np.uint8], out_sig=[np.uint8])\n\n    def work(self, input_items,\
-      \ output_items):\n        x = input_items[0]\n        y = output_items[0]\n        n = len(x)\n        y[0:2*n:2] = (x >> 1) & 1\n        y[1:2*n:2] = x & 1\n        return 2*n\n"
-    _window_size: '0'
-    comment: 'Expand symbol indices back to individual FEC bits.'
     affinity: ''
     alias: ''
+    bits_per_chunk: '2'
+    comment: 'Expand each decoded QPSK symbol index into two MSB-first FEC bits.'
+    endianness: gr.GR_MSB_FIRST
     maxoutbuf: '0'
     minoutbuf: '0'
+    num_ports: '1'
+    type: byte
   states:
-    _io_cache: ('qpsk_symbols_to_bits', 'blk', [], [('0', 'byte', 1)], [('0', 'byte', 1)], 'Expand symbol indices back to individual FEC bits.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [1420, 500]
     rotation: 0
     state: enabled
+
 - name: fec_rx
   id: epy_block
   parameters:
@@ -748,21 +827,126 @@ blocks:
 - name: opus_dec
   id: epy_block
   parameters:
-    _source_code: "import ctypes\nimport ctypes.util\nimport numpy as np\nfrom gnuradio import gr\n\nclass blk(gr.basic_block):\n    \\\"\\\"\\\"Opus 16 kHz mono decoder with packet-loss concealment via libopus C API.\\\"\\\"\\\"\n    def __init__(self):\n        gr.basic_block.__init__(self,name=\\\"opus_decoder_16k\\\",in_sig=[np.uint8],out_sig=[np.float32])\n        libname=ctypes.util.find_library(\\\"opus\\\") or \\\"libopus.so.0\\\"\n        self.lib=ctypes.CDLL(libname)\n        self.lib.opus_decoder_create.argtypes=[ctypes.c_int,ctypes.c_int,ctypes.POINTER(ctypes.c_int)]\n        self.lib.opus_decoder_create.restype=ctypes.c_void_p\n        self.lib.opus_decoder_decode.argtypes=[ctypes.c_void_p,ctypes.POINTER(ctypes.c_ubyte),ctypes.c_int,ctypes.POINTER(ctypes.c_int16),ctypes.c_int,ctypes.c_int]\n        self.lib.opus_decoder_decode.restype=ctypes.c_int\n        self.lib.opus_decoder_destroy.argtypes=[ctypes.c_void_p]\n        err=ctypes.c_int()\n        self.dec=self.lib.opus_decoder_create(16000,1,ctypes.byref(err))\n        if not self.dec or err.value!=0: raise RuntimeError(\\\"libopus decoder creation failed (error %d)\\\" % err.value)\n        self.frame=320; self.packet=42; self.buf=bytearray(); self.audio_q=np.empty(0,dtype=np.float32); self.expected=None\n    def stop(self):\n        if getattr(self,\\\"dec\\\",None): self.lib.opus_decoder_destroy(self.dec); self.dec=None\n        return super().stop()\n    def decode_one(self,pkt):\n        pcm=(ctypes.c_int16*320)()\n        if pkt is None:\n            n=self.lib.opus_decoder_decode(self.dec,None,0,pcm,320,0)\n        else:\n            raw=(ctypes.c_ubyte*len(pkt)).from_buffer_copy(pkt)\n            n=self.lib.opus_decoder_decode(self.dec,raw,len(pkt),pcm,320,0)\n        if n<0: raise RuntimeError(\\\"libopus decode failed (%d)\\\" % n)\n        return np.ctypeslib.as_array(pcm)[:n].astype(np.float32)/32767.0\n    def push(self,raw):\n        seq=int.from_bytes(raw[:2],\\\"big\\\"); pkt=bytes(raw[2:])\n        if self.expected is None: self.expected=seq\n        gap=(seq-self.expected)&0xffff\n        if gap>32768: return\n        for _ in range(gap):\n            self.audio_q=np.concatenate((self.audio_q,self.decode_one(None))); self.expected=(self.expected+1)&0xffff\n        self.audio_q=np.concatenate((self.audio_q,self.decode_one(pkt))); self.expected=(seq+1)&0xffff\n    def general_work(self,input_items,output_items):\n        x=input_items[0]\n        if len(x): self.buf.extend(bytes(x.tolist())); self.consume(0,len(x))\n        while len(self.buf)>=self.packet:\n            raw=bytes(self.buf[:self.packet]); del self.buf[:self.packet]\n            try: self.push(raw)\n            except Exception: pass\n        out=output_items[0]; n=min(len(out),len(self.audio_q))\n        if n: out[:n]=self.audio_q[:n]; self.audio_q=self.audio_q[n:]\n        return n\n"
+    _source_code: |-
+      import ctypes
+      import ctypes.util
+      import numpy as np
+      from gnuradio import gr
+
+      class blk(gr.basic_block):
+          def __init__(self):
+              gr.basic_block.__init__(
+                  self,
+                  name='opus_decoder_16k',
+                  in_sig=[np.uint8],
+                  out_sig=[np.float32]
+              )
+              libname = ctypes.util.find_library('opus') or 'libopus.so.0'
+              self.lib = ctypes.CDLL(libname)
+              self.lib.opus_decoder_create.argtypes = [
+                  ctypes.c_int, ctypes.c_int,
+                  ctypes.POINTER(ctypes.c_int)
+              ]
+              self.lib.opus_decoder_create.restype = ctypes.c_void_p
+              self.lib.opus_decoder_decode.argtypes = [
+                  ctypes.c_void_p,
+                  ctypes.POINTER(ctypes.c_ubyte),
+                  ctypes.c_int,
+                  ctypes.POINTER(ctypes.c_int16),
+                  ctypes.c_int,
+                  ctypes.c_int
+              ]
+              self.lib.opus_decoder_decode.restype = ctypes.c_int
+              self.lib.opus_decoder_destroy.argtypes = [ctypes.c_void_p]
+              err = ctypes.c_int()
+              self.dec = self.lib.opus_decoder_create(
+                  16000, 1, ctypes.byref(err)
+              )
+              if not self.dec or err.value != 0:
+                  raise RuntimeError(
+                      'libopus decoder creation failed (error %d)' % err.value
+                  )
+              self.frame = 320
+              self.packet = 42
+              self.buf = bytearray()
+              self.audio_q = np.empty(0, dtype=np.float32)
+              self.expected = None
+
+          def stop(self):
+              if getattr(self, 'dec', None):
+                  self.lib.opus_decoder_destroy(self.dec)
+                  self.dec = None
+              return super().stop()
+
+          def decode_one(self, pkt):
+              pcm = (ctypes.c_int16 * self.frame)()
+              if pkt is None:
+                  n = self.lib.opus_decoder_decode(
+                      self.dec, None, 0, pcm, self.frame, 0
+                  )
+              else:
+                  raw = (ctypes.c_ubyte * len(pkt)).from_buffer_copy(pkt)
+                  n = self.lib.opus_decoder_decode(
+                      self.dec, raw, len(pkt), pcm, self.frame, 0
+                  )
+              if n < 0:
+                  raise RuntimeError('libopus decode failed (%d)' % n)
+              return (
+                  np.ctypeslib.as_array(pcm)[:n]
+                  .astype(np.float32) / 32767.0
+              )
+
+          def push(self, raw):
+              seq = int.from_bytes(raw[:2], 'big')
+              pkt = bytes(raw[2:])
+              if self.expected is None:
+                  self.expected = seq
+              gap = (seq - self.expected) & 0xffff
+              if gap > 32768:
+                  return
+              for _ in range(gap):
+                  self.audio_q = np.concatenate(
+                      (self.audio_q, self.decode_one(None))
+                  )
+                  self.expected = (self.expected + 1) & 0xffff
+              self.audio_q = np.concatenate(
+                  (self.audio_q, self.decode_one(pkt))
+              )
+              self.expected = (seq + 1) & 0xffff
+
+          def general_work(self, input_items, output_items):
+              x = input_items[0]
+              if len(x):
+                  self.buf.extend(bytes(x.tolist()))
+                  self.consume(0, len(x))
+              while len(self.buf) >= self.packet:
+                  raw = bytes(self.buf[:self.packet])
+                  del self.buf[:self.packet]
+                  try:
+                      self.push(raw)
+                  except Exception:
+                      pass
+              out = output_items[0]
+              n = min(len(out), len(self.audio_q))
+              if n:
+                  out[:n] = self.audio_q[:n]
+                  self.audio_q = self.audio_q[n:]
+              return n
     _window_size: '0'
-    comment: '16 kHz mono Opus decoder with PLC; uses system libopus directly.'
+    comment: '16 kHz mono Opus decoder with packet-loss concealment using system libopus.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ('opus_decoder_16k', 'blk', [], [('0', 'byte', 1)], [('0', 'float', 1)], '16 kHz mono Opus decoder with PLC; uses system libopus directly.', [])
+    _io_cache: ('opus_decoder_16k', 'blk', [], [('0', 'byte', 1)], [('0', 'float', 1)], '16 kHz mono Opus PLC.', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [1690, 500]
     rotation: 0
     state: enabled
+
 - name: rx_audio_lp
   id: low_pass_filter
   parameters:
@@ -874,40 +1058,6 @@ blocks:
     coordinate: [950, 50]
     rotation: 0
     state: enabled
-- name: rx_const
-  id: qtgui_const_sink_x
-  parameters:
-    type: complex
-    name: '"QPSK constellation"'
-    size: '2048'
-    grid: 'True'
-    autoscale: 'True'
-    ymin: '-1.5'
-    ymax: '1.5'
-    xmin: '-1.5'
-    xmax: '1.5'
-    nconnections: '1'
-    update_time: '0.10'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_level: '0.0'
-    tr_chan: '0'
-    tr_tag: '""'
-    legend: 'True'
-    axislabels: 'True'
-    label1: 'RX symbols'
-    width1: '1'
-    color1: '"blue"'
-    style1: '0'
-    marker1: '0'
-    alpha1: '1.0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1060, 50]
-    rotation: 0
-    state: enabled
 - name: note
   id: note
   parameters:
@@ -929,76 +1079,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [80, 750]
-    rotation: 0
-    state: enabled
-- name: tx_const
-  id: qtgui_const_sink_x
-  parameters:
-    type: complex
-    name: '"TX QPSK Constellation"'
-    size: '2048'
-    grid: 'True'
-    autoscale: 'False'
-    ymin: '-1.5'
-    ymax: '1.5'
-    xmin: '-1.5'
-    xmax: '1.5'
-    nconnections: '1'
-    update_time: '0.10'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_level: '0'
-    tr_chan: '0'
-    tr_tag: '""'
-    axislabels: 'True'
-    legend: 'True'
-    label1: TX
-    width1: '1'
-    color1: blue
-    alpha1: '1.0'
-    style1: '0'
-    marker1: '0'
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
-    label10: ''
-    width2: '1'
-    width3: '1'
-    width4: '1'
-    width5: '1'
-    width6: '1'
-    width7: '1'
-    width8: '1'
-    width9: '1'
-    width10: '1'
-    color2: red
-    color3: red
-    color4: red
-    color5: red
-    color6: red
-    color7: red
-    color8: red
-    color9: red
-    color10: red
-    alpha2: '1'
-    alpha3: '1'
-    alpha4: '1'
-    alpha5: '1'
-    alpha6: '1'
-    alpha7: '1'
-    alpha8: '1'
-    alpha9: '1'
-    alpha10: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1270, 50]
     rotation: 0
     state: enabled
 - name: tx_audio_time
@@ -1369,11 +1449,9 @@ connections:
 - [opus_enc, '0', fec_tx, '0']
 - [fec_tx, '0', unpack_bits_tx, '0']
 - [unpack_bits_tx, '0', qpsk_symbols_tx, '0']
-- [qpsk_symbols_tx, '0', diff_enc_tx, '0']
-- [diff_enc_tx, '0', qpsk_map_tx, '0']
-- [qpsk_map_tx, '0', tx_const, '0']
-- [qpsk_map_tx, '0', tx_rrc, '0']
-- [tx_rrc, '0', tx_ptt_gate, '0']
+- [qpsk_symbols_tx, '0', qpsk_mod_tx, '0']
+- [qpsk_mod_tx, '0', tx_ptt_gate, '0']
+- [qpsk_mod_tx, '0', tx_fft, '0']
 - [tx_ptt_gate, '0', tx_to_pluto, '0']
 - [tx_to_pluto, '0', pluto_tx, '0']
 - [tx_ptt_gate, '0', tx_mag, '0']
