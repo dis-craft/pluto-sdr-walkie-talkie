@@ -195,6 +195,56 @@ blocks:
     coordinate: [80, 610]
     rotation: 0
     state: enabled
+- name: tx_monitor_gain
+  id: variable_qtgui_range
+  parameters:
+    comment: 'Optional sidetone: monitor your live transmit voice before Opus/FEC. Use headphones to avoid acoustic feedback.'
+    gui_hint: ''
+    label: TX monitor (sidetone)
+    min_len: '220'
+    orient: QtCore.Qt.Orientation.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.05'
+    stop: '1'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 715]
+    rotation: 0
+    state: enabled
+- name: tx_monitor_block
+  id: blocks_multiply_const_vxx
+  parameters:
+    comment: 'Live microphone sidetone gain; zero means disabled.'
+    const: tx_monitor_gain
+    type: float
+    vlen: '1'
+    mode: scalar
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [760, 390]
+    rotation: 0
+    state: enabled
+- name: audio_mix
+  id: blocks_add_xx
+  parameters:
+    comment: 'Mix optional TX sidetone with decoded RX audio.'
+    num_inputs: '2'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1940, 500]
+    rotation: 0
+    state: enabled
 - name: rx_volume
   id: variable_qtgui_range
   parameters:
@@ -1676,6 +1726,7 @@ connections:
 - [tx_lp, '0', tx_gain, '0']
 - [tx_gain, '0', tx_limiter, '0']
 - [tx_limiter, '0', opus_enc, '0']
+- [tx_limiter, '0', tx_monitor_block, '0']
 - [opus_enc, '0', fec_tx, '0']
 - [fec_tx, '0', unpack_bits_tx, '0']
 - [unpack_bits_tx, '0', qpsk_symbols_tx, '0']
@@ -1706,7 +1757,9 @@ connections:
 - [rx_volume_block, '0', rx_audio_time, '0']
 - [opus_dec, '0', rx_audio_lp, '0']
 - [rx_audio_lp, '0', rx_volume_block, '0']
-- [rx_volume_block, '0', audio_sink, '0']
+- [tx_monitor_block, '0', audio_mix, '0']
+- [rx_volume_block, '0', audio_mix, '1']
+- [audio_mix, '0', audio_sink, '0']
 - [rx_channel, '0', rx_mag, '0']
 - [rx_mag, '0', rx_power_add, '0']
 - [rx_power_add, '0', rx_power_db, '0']
