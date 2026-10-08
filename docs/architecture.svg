@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07101c"/>
+      <stop offset="1" stop-color="#0d1726"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#20b8ff"/>
+      <stop offset="1" stop-color="#21e6c1"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f6cff"/>
+      <stop offset="1" stop-color="#d04cff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#4bd7ff"/>
+    </marker>
+    <style>
+      .title{font:700 42px Inter,Segoe UI,sans-serif;fill:#f4f8ff;letter-spacing:1px}
+      .sub{font:500 18px Inter,Segoe UI,sans-serif;fill:#9eb0c7}
+      .section{font:700 18px Inter,Segoe UI,sans-serif;fill:#fff;letter-spacing:1px}
+      .box{fill:#0d1a2b;stroke:#24435f;stroke-width:1.5}
+      .boxTitle{font:700 16px Inter,Segoe UI,sans-serif;fill:#ecf5ff}
+      .small{font:500 13px Inter,Segoe UI,sans-serif;fill:#9fb2c7}
+      .metric{font:700 13px Inter,Segoe UI,sans-serif;fill:#66e4ff}
+      .footer{font:600 14px Inter,Segoe UI,sans-serif;fill:#7f95ad}
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="url(#bg)"/>
+  <path d="M0 120 H1600" stroke="#16334a" stroke-width="1"/>
+  <path d="M0 812 H1600" stroke="#16334a" stroke-width="1"/>
+
+  <text x="70" y="70" class="title">DISCRAFT DIGITAL VOICE MODEM</text>
+  <text x="70" y="99" class="sub">GNU Radio + ADALM-PLUTO • Live Voice • Differential QPSK • FEC • Software RF Testbench</text>
+
+  <!-- TX -->
+  <rect x="50" y="145" width="1500" height="225" rx="18" fill="#091726" stroke="#1bbff5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="75" y="178" class="section" fill="#4bd7ff">TRANSMITTER — AUDIO → DIGITAL → RF</text>
+
+  <g transform="translate(75,205)">
+    <rect width="190" height="105" rx="12" class="box"/>
+    <text x="18" y="32" class="boxTitle">LIVE MICROPHONE</text>
+    <text x="18" y="57" class="small">16 kHz mono</text>
+    <text x="18" y="79" class="small">Real-time voice input</text>
+  </g>
+
+  <g transform="translate(290,205)">
+    <rect width="210" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">AUDIO CONDITIONING</text>
+    <text x="18" y="52" class="small">DC block • 100 Hz HPF</text>
+    <text x="18" y="71" class="small">7 kHz LPF • gain</text>
+    <text x="18" y="90" class="small">soft limiter</text>
+  </g>
+
+  <g transform="translate(525,205)">
+    <rect width="185" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">OPUS ENCODER</text>
+    <text x="18" y="53" class="metric">16 kbps CBR</text>
+    <text x="18" y="73" class="small">20 ms • 40 bytes</text>
+    <text x="18" y="92" class="small">VOIP mode</text>
+  </g>
+
+  <g transform="translate(735,205)">
+    <rect width="190" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">FRAME + INTEGRITY</text>
+    <text x="18" y="52" class="small">16-bit sequence</text>
+    <text x="18" y="72" class="small">CRC32</text>
+    <text x="18" y="92" class="small">preamble + sync</text>
+  </g>
+
+  <g transform="translate(950,205)">
+    <rect width="190" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">FEC + INTERLEAVE</text>
+    <text x="18" y="52" class="small">K=7 • rate 1/2</text>
+    <text x="18" y="72" class="small">748 coded bits</text>
+    <text x="18" y="92" class="small">22 × 34 transpose</text>
+  </g>
+
+  <g transform="translate(1165,205)">
+    <rect width="180" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">QPSK MODEM</text>
+    <text x="18" y="52" class="small">Differential QPSK</text>
+    <text x="18" y="72" class="small">RRC α = 0.25</text>
+    <text x="18" y="92" class="small">21.2 ksym/s</text>
+  </g>
+
+  <g transform="translate(1370,205)">
+    <rect width="150" height="105" rx="12" class="box"/>
+    <text x="18" y="30" class="boxTitle">BASEBAND</text>
+    <text x="18" y="53" class="metric">84.8 kS/s</text>
+    <text x="18" y="73" class="small">4 samples/symbol</text>
+    <text x="18" y="92" class="small">20× → 1.696 MSPS</text>
+  </g>
+
+  <!-- connectors TX -->
+  <g stroke="#4bd7ff" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M265 257 H285"/><path d="M500 257 H520"/><path d="M710 257 H730"/>
+    <path d="M925 257 H945"/><path d="M1140 257 H1160"/><path d="M1345 257 H1365"/>
+  </g>
+
+  <!-- channel choice -->
+  <rect x="50" y="402" width="1500" height="120" rx="18" fill="#0a1422" stroke="#4bd7ff" stroke-width="1.5"/>
+  <text x="75" y="435" class="section">CHANNEL / HARDWARE BOUNDARY</text>
+
+  <rect x="75" y="451" width="650" height="48" rx="10" fill="#0d2030" stroke="#1bbff5"/>
+  <text x="98" y="481" class="boxTitle">SOFTWARE RF CHANNEL</text>
+  <text x="355" y="481" class="small">AWGN • frequency offset • repeatable test impairments</text>
+
+  <rect x="875" y="451" width="645" height="48" rx="10" fill="#0d2030" stroke="#40e68e"/>
+  <text x="897" y="481" class="boxTitle">ADALM-PLUTO / AD9363</text>
+  <text x="1155" y="481" class="small">Real RF path • 1 TX / 1 RX • separate SMA ports</text>
+
+  <text x="750" y="480" class="section">OR</text>
+
+  <!-- RX -->
+  <rect x="50" y="552" width="1500" height="225" rx="18" fill="#0d1020" stroke="#ae64ff" stroke-width="2" filter="url(#shadow)"/>
+  <text x="75" y="585" class="section" fill="#c08cff">RECEIVER — RF → DIGITAL → AUDIO</text>
+
+  <g transform="translate(75,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="32" class="boxTitle">1.696 MSPS</text>
+    <text x="18" y="57" class="small">from Pluto or</text>
+    <text x="18" y="77" class="small">software channel</text>
+  </g>
+
+  <g transform="translate(250,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">DECIMATION</text>
+    <text x="18" y="56" class="metric">20×</text>
+    <text x="18" y="77" class="small">→ 84.8 kS/s</text>
+  </g>
+
+  <g transform="translate(425,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">RX CHANNEL LPF</text>
+    <text x="18" y="56" class="small">12.5 kHz cutoff</text>
+    <text x="18" y="77" class="small">noise rejection</text>
+  </g>
+
+  <g transform="translate(600,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">FLL</text>
+    <text x="18" y="56" class="small">coarse frequency</text>
+    <text x="18" y="77" class="small">recovery</text>
+  </g>
+
+  <g transform="translate(775,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">RRC + GARDNER</text>
+    <text x="18" y="56" class="small">matched filter</text>
+    <text x="18" y="77" class="small">timing recovery</text>
+  </g>
+
+  <g transform="translate(950,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">COSTAS LOOP</text>
+    <text x="18" y="56" class="small">carrier / phase</text>
+    <text x="18" y="77" class="small">recovery</text>
+  </g>
+
+  <g transform="translate(1125,614)">
+    <rect width="155" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">DEMOD + FEC</text>
+    <text x="18" y="56" class="small">QPSK decision</text>
+    <text x="18" y="77" class="small">deinterleave + Viterbi</text>
+  </g>
+
+  <g transform="translate(1300,614)">
+    <rect width="220" height="105" rx="12" class="box"/>
+    <text x="18" y="31" class="boxTitle">VOICE RECOVERY</text>
+    <text x="18" y="54" class="small">CRC + sequence handling</text>
+    <text x="18" y="75" class="small">Opus + packet-loss concealment</text>
+    <text x="18" y="95" class="metric">16 kHz RX AUDIO → SPEAKER</text>
+  </g>
+
+  <g stroke="#c08cff" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M230 666 H245"/><path d="M405 666 H420"/><path d="M580 666 H595"/>
+    <path d="M755 666 H770"/><path d="M930 666 H945"/><path d="M1105 666 H1120"/>
+    <path d="M1280 666 H1295"/>
+  </g>
+
+  <!-- dashboard -->
+  <rect x="50" y="812" width="1500" height="118" rx="18" fill="#0a1420" stroke="#1fd989" stroke-width="2"/>
+  <text x="75" y="845" class="section" fill="#58efae">REAL-TIME ANALYSIS</text>
+  <g>
+    <text x="75" y="876" class="boxTitle">TX spectrum</text>
+    <text x="75" y="899" class="small">waveform bandwidth / activity</text>
+    <text x="335" y="876" class="boxTitle">RX spectrum</text>
+    <text x="335" y="899" class="small">signal + noise floor</text>
+    <text x="610" y="876" class="boxTitle">QPSK constellation</text>
+    <text x="610" y="899" class="small">timing / phase / SNR</text>
+    <text x="945" y="876" class="boxTitle">FLL estimate</text>
+    <text x="945" y="899" class="small">frequency error tracking</text>
+    <text x="1190" y="876" class="boxTitle">TX/RX power</text>
+    <text x="1190" y="899" class="small">relative baseband level</text>
+    <text x="1395" y="876" class="boxTitle">LIVE RX AUDIO</text>
+    <text x="1395" y="899" class="small">decoded waveform</text>
+  </g>
+
+  <text x="70" y="958" class="footer">Canonical flowgraph: pluto_digital_voice_hd.grc • Software mode requires no SDR • Hardware mode is intentionally disabled by default</text>
+</svg>
