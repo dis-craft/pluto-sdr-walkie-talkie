@@ -2,14 +2,14 @@ options:
   parameters:
     author: DISCRAFT
     catch_exceptions: 'True'
-    category: '[GRC]'
-    comment: 'Professional-style PlutoSDR digital voice transceiver: 16 kHz Opus CBR + rate-1/2 convolutional FEC + QPSK + RRC + synchronization. 433.92 MHz default. Use only within applicable RF rules/licensing.'
+    category: 'DISCRAFT Pluto SDR'
+    comment: 'FINAL canonical PlutoSDR digital voice flowgraph. This file is intentionally self-identifying as DISCRAFT FINAL and contains no samp_rate=32000 variable.'
     description: High-quality low-latency digital voice transceiver for ADALM-Pluto with live RF spectrum, QPSK constellation, FLL, audio waveform and power monitoring.
     enable_cache: 'True'
     gen_cmake: 'On'
     generate_options: qt_gui
     hier_block_src_path: .
-    id: pluto_digital_voice_hd
+    id: pluto_discraft_digital_voice_final
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -19,16 +19,13 @@ options:
     run_options: prompt
     sizing_mode: fixed
     thread_safe_setters: 'False'
-    title: Pluto Digital Voice HD - Live Dashboard
-    window_size: (1600, 900)
+    title: DISCRAFT Pluto Digital Voice - FINAL
+    window_size: (1800, 1000)
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate:
-    - 40
-    - 40
-    description: ''
+    coordinate: [16, 20.0]
     domain: std
     pythread: false
     realtime_scheduling: '1'
@@ -36,7 +33,7 @@ options:
     run_on: ''
     translation_language: none
     thread_safe_setters: false
-    title: Pluto Digital Voice HD - Live Dashboard
+    title: DISCRAFT Pluto Digital Voice - FINAL
 blocks:
 - name: samp_audio
   id: variable
@@ -44,9 +41,10 @@ blocks:
     comment: ''
     value: '16000'
   states:
-    coordinate:
-    - 80
-    - 80
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 80]
     rotation: 0
     state: enabled
 - name: sps
@@ -55,9 +53,10 @@ blocks:
     comment: QPSK samples per symbol
     value: '4'
   states:
-    coordinate:
-    - 80
-    - 140
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 140]
     rotation: 0
     state: enabled
 - name: sym_rate
@@ -66,9 +65,10 @@ blocks:
     comment: 21.2 ksym/s, 424 symbols per 20 ms frame
     value: '21200'
   states:
-    coordinate:
-    - 80
-    - 320
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 320]
     rotation: 0
     state: enabled
 - name: baseband_rate
@@ -77,9 +77,10 @@ blocks:
     comment: "4 samples/symbol \xD7 21.2 ksym/s"
     value: '84800'
   states:
-    coordinate:
-    - 80
-    - 200
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 200]
     rotation: 0
     state: enabled
 - name: pluto_rate
@@ -88,9 +89,10 @@ blocks:
     comment: "8\xD7 interpolation to a valid Pluto sample rate"
     value: '678400'
   states:
-    coordinate:
-    - 80
-    - 260
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 260]
     rotation: 0
     state: enabled
 - name: tx_freq
@@ -107,9 +109,10 @@ blocks:
     value: '433920000'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 330
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 330]
     rotation: 0
     state: enabled
 - name: rx_freq
@@ -126,9 +129,10 @@ blocks:
     value: '433920000'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 400
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 400]
     rotation: 0
     state: enabled
 - name: tx_attenuation
@@ -145,9 +149,10 @@ blocks:
     value: '10'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 470
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 470]
     rotation: 0
     state: enabled
 - name: rx_gain
@@ -164,9 +169,10 @@ blocks:
     value: '38'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 540
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 540]
     rotation: 0
     state: enabled
 - name: mic_gain
@@ -183,9 +189,10 @@ blocks:
     value: '1'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 610
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 610]
     rotation: 0
     state: enabled
 - name: rx_volume
@@ -202,9 +209,10 @@ blocks:
     value: '1'
     widget: counter_slider
   states:
-    coordinate:
-    - 80
-    - 680
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 680]
     rotation: 0
     state: enabled
 - name: ptt_enable
@@ -229,9 +237,10 @@ blocks:
     widget: radio_buttons
     orient: QtWidgets.QHBoxLayout
   states:
-    coordinate:
-    - 80
-    - 750
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 750]
     rotation: 0
     state: enabled
 - name: qpsk_const
@@ -248,9 +257,10 @@ blocks:
     w_imag_sect: '1'
     w_real_sect: '1'
   states:
-    coordinate:
-    - 360
-    - 80
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 80]
     rotation: 0
     state: enabled
 - name: audio_src
@@ -262,9 +272,10 @@ blocks:
     ok_to_block: 'True'
     samp_rate: samp_audio
   states:
-    coordinate:
-    - 40
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 300]
     rotation: 0
     state: enabled
 - name: tx_dc
@@ -275,9 +286,10 @@ blocks:
     long_form: 'True'
     type: ff
   states:
-    coordinate:
-    - 170
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [170, 300]
     rotation: 0
     state: enabled
 - name: tx_hp
@@ -294,9 +306,10 @@ blocks:
     type: fir_filter_fff
     win: window.WIN_HAMMING
   states:
-    coordinate:
-    - 300
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [300, 300]
     rotation: 0
     state: enabled
 - name: tx_lp
@@ -313,9 +326,10 @@ blocks:
     type: fir_filter_fff
     win: window.WIN_HAMMING
   states:
-    coordinate:
-    - 430
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [430, 300]
     rotation: 0
     state: enabled
 - name: tx_gain
@@ -327,9 +341,10 @@ blocks:
     vlen: '1'
     mode: scalar
   states:
-    coordinate:
-    - 560
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [560, 300]
     rotation: 0
     state: enabled
 - name: tx_limiter
@@ -346,9 +361,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 690
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [690, 300]
     rotation: 0
     state: enabled
 - name: opus_enc
@@ -363,9 +379,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 820
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [820, 300]
     rotation: 0
     state: enabled
 - name: fec_tx
@@ -387,9 +404,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 970
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [970, 300]
     rotation: 0
     state: enabled
 - name: unpack_bits_tx
@@ -401,9 +419,10 @@ blocks:
     num_ports: '1'
     type: byte
   states:
-    coordinate:
-    - 1120
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 300]
     rotation: 0
     state: enabled
 - name: qpsk_symbols_tx
@@ -415,9 +434,10 @@ blocks:
     num_ports: '1'
     type: byte
   states:
-    coordinate:
-    - 1210
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1210, 300]
     rotation: 0
     state: enabled
 - name: diff_enc_tx
@@ -426,9 +446,10 @@ blocks:
     coding: digital.DIFF_DIFFERENTIAL
     modulus: '4'
   states:
-    coordinate:
-    - 1300
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1300, 300]
     rotation: 0
     state: enabled
 - name: qpsk_map_tx
@@ -440,9 +461,10 @@ blocks:
     out_type: complex
     symbol_table: '[1+1j, -1+1j, -1-1j, 1-1j]'
   states:
-    coordinate:
-    - 1390
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1390, 300]
     rotation: 0
     state: enabled
 - name: tx_rrc
@@ -457,9 +479,10 @@ blocks:
     sym_rate: sym_rate
     type: interp_fir_filter_ccf
   states:
-    coordinate:
-    - 1480
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1480, 300]
     rotation: 0
     state: enabled
 - name: tx_ptt_gate
@@ -471,9 +494,10 @@ blocks:
     type: complex
     vlen: '1'
   states:
-    coordinate:
-    - 1600
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1600, 300]
     rotation: 0
     state: enabled
 - name: tx_to_pluto
@@ -486,9 +510,10 @@ blocks:
     taps: '[]'
     type: ccc
   states:
-    coordinate:
-    - 1710
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1710, 300]
     rotation: 0
     state: enabled
 - name: pluto_tx
@@ -508,9 +533,10 @@ blocks:
     type: fc32
     uri: ''
   states:
-    coordinate:
-    - 1840
-    - 300
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1840, 300]
     rotation: 0
     state: enabled
 - name: pluto_rx
@@ -534,9 +560,10 @@ blocks:
     type: fc32
     uri: ''
   states:
-    coordinate:
-    - 40
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 500]
     rotation: 0
     state: enabled
 - name: rx_decim
@@ -549,9 +576,10 @@ blocks:
     taps: '[]'
     type: ccc
   states:
-    coordinate:
-    - 170
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [170, 500]
     rotation: 0
     state: enabled
 - name: rx_channel
@@ -568,9 +596,10 @@ blocks:
     type: fir_filter_ccf
     win: window.WIN_HAMMING
   states:
-    coordinate:
-    - 300
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [300, 500]
     rotation: 0
     state: enabled
 - name: rx_fll
@@ -583,9 +612,10 @@ blocks:
     w: '0.02'
     type: cc
   states:
-    coordinate:
-    - 450
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [450, 500]
     rotation: 0
     state: enabled
 - name: rx_rrc
@@ -601,9 +631,10 @@ blocks:
     sym_rate: sym_rate
     type: fir_filter_ccf
   states:
-    coordinate:
-    - 600
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 500]
     rotation: 0
     state: enabled
 - name: rx_sym
@@ -622,9 +653,10 @@ blocks:
     type: cc
     loop_bw: '0.03'
   states:
-    coordinate:
-    - 780
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [780, 500]
     rotation: 0
     state: enabled
 - name: rx_costas
@@ -635,9 +667,10 @@ blocks:
     use_snr: 'False'
     w: '0.01'
   states:
-    coordinate:
-    - 950
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [950, 500]
     rotation: 0
     state: enabled
 - name: rx_const_dec
@@ -645,9 +678,10 @@ blocks:
   parameters:
     constellation: qpsk_const
   states:
-    coordinate:
-    - 1120
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 500]
     rotation: 0
     state: enabled
 - name: rx_diff
@@ -655,9 +689,10 @@ blocks:
   parameters:
     modulus: '4'
   states:
-    coordinate:
-    - 1270
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1270, 500]
     rotation: 0
     state: enabled
 - name: rx_symbols_to_bits
@@ -674,9 +709,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 1420
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1420, 500]
     rotation: 0
     state: enabled
 - name: fec_rx
@@ -703,9 +739,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 1530
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1530, 500]
     rotation: 0
     state: enabled
 - name: opus_dec
@@ -720,9 +757,10 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    coordinate:
-    - 1690
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1690, 500]
     rotation: 0
     state: enabled
 - name: rx_audio_lp
@@ -739,9 +777,10 @@ blocks:
     type: fir_filter_fff
     win: window.WIN_HAMMING
   states:
-    coordinate:
-    - 1680
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1680, 500]
     rotation: 0
     state: enabled
 - name: rx_volume_block
@@ -753,9 +792,10 @@ blocks:
     vlen: '1'
     mode: scalar
   states:
-    coordinate:
-    - 1840
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1840, 500]
     rotation: 0
     state: enabled
 - name: audio_sink
@@ -766,9 +806,10 @@ blocks:
     ok_to_block: 'True'
     samp_rate: samp_audio
   states:
-    coordinate:
-    - 1990
-    - 500
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1990, 500]
     rotation: 0
     state: enabled
 - name: tx_fft
@@ -796,9 +837,10 @@ blocks:
     update_time: '0.10'
     wintype: window.WIN_BLACKMAN_hARRIS
   states:
-    coordinate:
-    - 1380
-    - 50
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1380, 50]
     rotation: 0
     state: enabled
 - name: rx_fft
@@ -826,9 +868,10 @@ blocks:
     update_time: '0.10'
     wintype: window.WIN_BLACKMAN_hARRIS
   states:
-    coordinate:
-    - 950
-    - 50
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [950, 50]
     rotation: 0
     state: enabled
 - name: rx_const
@@ -859,9 +902,10 @@ blocks:
     marker1: '0'
     alpha1: '1.0'
   states:
-    coordinate:
-    - 1060
-    - 50
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1060, 50]
     rotation: 0
     state: enabled
 - name: note
@@ -881,9 +925,10 @@ blocks:
 
       Install opuslib + system libopus. Start with cabled TX -> attenuator -> RX. Never connect TX directly to RX. Use only authorized frequencies, power and duty cycle.'
   states:
-    coordinate:
-    - 80
-    - 750
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [80, 750]
     rotation: 0
     state: enabled
 - name: tx_const
@@ -950,9 +995,10 @@ blocks:
     alpha9: '1'
     alpha10: '1'
   states:
-    coordinate:
-    - 1270
-    - 50
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1270, 50]
     rotation: 0
     state: enabled
 - name: tx_audio_time
@@ -1042,9 +1088,10 @@ blocks:
     marker10: '-1'
     alpha10: '1.0'
   states:
-    coordinate:
-    - 300
-    - 720
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [300, 720]
     rotation: 0
     state: enabled
 - name: rx_audio_time
@@ -1080,9 +1127,10 @@ blocks:
     marker1: '-1'
     alpha1: '1.0'
   states:
-    coordinate:
-    - 700
-    - 720
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [700, 720]
     rotation: 0
     state: enabled
 - name: fll_time
@@ -1118,9 +1166,10 @@ blocks:
     marker1: '-1'
     alpha1: '1.0'
   states:
-    coordinate:
-    - 1050
-    - 720
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1050, 720]
     rotation: 0
     state: enabled
 - name: tx_mag
@@ -1128,9 +1177,10 @@ blocks:
   parameters:
     vlen: '1'
   states:
-    coordinate:
-    - 1500
-    - 190
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1500, 190]
     rotation: 0
     state: enabled
 - name: tx_power_add
@@ -1140,9 +1190,10 @@ blocks:
     const: '1e-12'
     vlen: '1'
   states:
-    coordinate:
-    - 1560
-    - 190
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1560, 190]
     rotation: 0
     state: enabled
 - name: tx_power_db
@@ -1152,9 +1203,10 @@ blocks:
     k: '0'
     vlen: '1'
   states:
-    coordinate:
-    - 1620
-    - 190
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1620, 190]
     rotation: 0
     state: enabled
 - name: rx_mag
@@ -1162,9 +1214,10 @@ blocks:
   parameters:
     vlen: '1'
   states:
-    coordinate:
-    - 640
-    - 620
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [640, 620]
     rotation: 0
     state: enabled
 - name: rx_power_add
@@ -1174,9 +1227,10 @@ blocks:
     const: '1e-12'
     vlen: '1'
   states:
-    coordinate:
-    - 710
-    - 620
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [710, 620]
     rotation: 0
     state: enabled
 - name: rx_power_db
@@ -1186,9 +1240,10 @@ blocks:
     k: '0'
     vlen: '1'
   states:
-    coordinate:
-    - 780
-    - 620
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [780, 620]
     rotation: 0
     state: enabled
 - name: power_sink
@@ -1234,9 +1289,10 @@ blocks:
     unit10: ''
     factor10: '1'
   states:
-    coordinate:
-    - 1720
-    - 620
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1720, 620]
     rotation: 0
     state: enabled
 - name: rx_const_sink
@@ -1273,9 +1329,10 @@ blocks:
     marker2: '-1'
     alpha2: '0'
   states:
-    coordinate:
-    - 1420
-    - 720
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1420, 720]
     rotation: 0
     state: enabled
 - name: note2
@@ -1283,9 +1340,10 @@ blocks:
   parameters:
     content: 'Wiring is restored in this build. If you opened an older local copy, remove it and pull the root pluto_digital_voice_hd.grc again.'
   states:
-    coordinate:
-    - 40
-    - 820
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 820]
     rotation: 0
     state: enabled
 connections:
@@ -1332,3 +1390,15 @@ connections:
 - [rx_mag, '0', rx_power_add, '0']
 - [rx_power_add, '0', rx_power_db, '0']
 - [rx_power_db, '0', power_sink, '1']
+
+- name: final_marker
+  id: note
+  parameters:
+    content: 'DISCRAFT FINAL BUILD — if this text is visible in GRC, you opened the canonical repository file. Audio: 16 kHz mono. Opus: 16 kbps CBR/20 ms. Digital modem: differential QPSK + RRC + FEC + synchronization. Pluto sample stream: 678.4 kS/s. Hardware RF bandwidth: 200 kHz minimum. First RF test must use suitable attenuation.'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 820]
+    rotation: 0
+    state: enabled
