@@ -87,7 +87,7 @@ blocks:
   id: variable
   parameters:
     comment: "8\xD7 interpolation to a valid Pluto sample rate"
-    value: '678400'
+    value: '1696000'
   states:
     bus_sink: false
     bus_source: false
@@ -106,7 +106,7 @@ blocks:
     start: '70000000'
     step: '1000'
     stop: '6000000000'
-    value: '467840000'
+    value: '4169600000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -126,7 +126,7 @@ blocks:
     start: '70000000'
     step: '1000'
     stop: '6000000000'
-    value: '467840000'
+    value: '4169600000'
     widget: counter_slider
   states:
     bus_sink: false
@@ -261,6 +261,54 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [360, 80]
+    rotation: 0
+    state: enabled
+- name: c0
+  id: variable
+  parameters:
+    comment: 'Speed of light (m/s).'
+    value: '299792458.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 330]
+    rotation: 0
+    state: enabled
+- name: antenna_freq
+  id: variable
+  parameters:
+    comment: 'Center of TX/RX operating frequencies.'
+    value: (tx_freq + rx_freq) / 2.0
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 360]
+    rotation: 0
+    state: enabled
+- name: quarter_wave_cm
+  id: variable
+  parameters:
+    comment: 'Approximate free-space quarter-wave length in cm.'
+    value: 100.0 * c0 / antenna_freq / 4.0
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 390]
+    rotation: 0
+    state: enabled
+- name: half_wave_cm
+  id: variable
+  parameters:
+    comment: 'Approximate free-space half-wave dipole total length in cm.'
+    value: 100.0 * c0 / antenna_freq / 2.0
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [20, 420]
     rotation: 0
     state: enabled
 - name: sim_audio_freq
@@ -679,10 +727,12 @@ blocks:
 - name: tx_to_pluto
   id: rational_resampler_xxx
   parameters:
-    comment: '8x interpolation: 84.8 kS/s -> 678.4 kS/s.'
+    affinity: ''
+    alias: ''
+    comment: '20x interpolation: 84.8 kS/s -> 1.696 MSPS for Pluto.'
     decim: '1'
     fbw: '0.45'
-    interp: '8'
+    interp: '20'
     taps: '[]'
     type: ccc
   states:
@@ -692,60 +742,7 @@ blocks:
     coordinate: [1710, 300]
     rotation: 0
     state: enabled
-- name: sim_audio
-  id: analog_sig_source_x
-  parameters:
-    alias: ''
-    amp: sim_audio_amp
-    comment: 'Deterministic speech-band tone used for a hardware-free end-to-end test.'
-    freq: sim_audio_freq
-    offset: '0'
-    phase: '0'
-    samp_rate: samp_audio
-    showports: 'False'
-    type: float
-    waveform: analog.GR_SIN_WAVE
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [500, 700]
-    rotation: 0
-    state: enabled
-- name: sim_throttle
-  id: blocks_throttle
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: 'Real-time pacing for software-only test.'
-    ignoretag: 'True'
-    samples_per_second: pluto_rate
-    type: complex
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1710, 700]
-    rotation: 0
-    state: enabled
-- name: sim_channel
-  id: channels_channel_model
-  parameters:
-    block_tags: 'False'
-    comment: 'Software RF channel model: AWGN + carrier offset.'
-    epsilon: '1.0'
-    freq_offset: sim_freq_offset
-    noise_voltage: sim_noise
-    seed: '42'
-    taps: '[1.0+0j]'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1870, 700]
-    rotation: 0
-    state: enabled
+
 - name: pluto_tx
   id: iio_pluto_sink
   parameters:
@@ -781,7 +778,7 @@ blocks:
     filter_source: '''Auto'''
     fstop: '0'
     frequency: rx_freq
-    gain1: '''manual'''
+    gain1: '''slow_attack'''
     len_tag_key: packet_len
     manual_gain1: rx_gain
     quadrature: 'True'
@@ -799,8 +796,10 @@ blocks:
 - name: rx_decim
   id: rational_resampler_xxx
   parameters:
-    comment: '678.4 kS/s -> 84.8 kS/s.'
-    decim: '8'
+    affinity: ''
+    alias: ''
+    comment: '20x decimation: Pluto 1.696 MSPS -> 84.8 kS/s modem rate.'
+    decim: '20'
     fbw: '0.45'
     interp: '1'
     taps: '[]'
@@ -812,6 +811,7 @@ blocks:
     coordinate: [170, 500]
     rotation: 0
     state: enabled
+
 - name: rx_channel
   id: low_pass_filter
   parameters:
@@ -1218,7 +1218,7 @@ blocks:
       16 kHz mono -> Opus 16 kbps CBR / 20 ms -> CRC32 -> K=7 rate-1/2 FEC -> 22x34 interleave -> preamble + sync -> differential Gray QPSK -> RRC alpha 0.25.
 
 
-      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 678.4 kS/s. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
+      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 1.696 MSPS. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
 
 
       RX: software channel LPF -> FLL -> RRC/Gardner -> Costas -> constellation -> differential decode -> frame sync -> Viterbi -> CRC -> Opus PLC -> speaker.
@@ -1580,7 +1580,7 @@ blocks:
 - name: final_marker
   id: note
   parameters:
-    content: 'DISCRAFT FINAL BUILD — if this text is visible in GRC, you opened the canonical repository file. Audio: 16 kHz mono. Opus: 16 kbps CBR/20 ms. Digital modem: differential QPSK + RRC + FEC + synchronization. Pluto sample stream: 678.4 kS/s. Hardware RF bandwidth: 200 kHz minimum. First RF test must use suitable attenuation.'
+    content: 'DISCRAFT FINAL BUILD — if this text is visible in GRC, you opened the canonical repository file. Audio: 16 kHz mono. Opus: 16 kbps CBR/20 ms. Digital modem: differential QPSK + RRC + FEC + synchronization. Pluto sample stream: 1.696 MSPS. Hardware RF bandwidth: 200 kHz minimum. First RF test must use suitable attenuation.'
   states:
     bus_sink: false
     bus_source: false
@@ -1636,7 +1636,7 @@ connections:
 - name: runtime_note
   id: note
   parameters:
-    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 678.4 kS/s, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
+    content: 'DEFAULT = SOFTWARE SIMULATION. The graph intentionally runs without a Pluto connected: a generated 800 Hz audio tone is encoded, framed, FEC-coded, QPSK-modulated, pulse-shaped, interpolated to 1.696 MSPS, passed through an AWGN + carrier-offset Channel Model, decimated, synchronized and decoded, then displayed on the RX audio/spectrum/constellation views. Pluto TX and Pluto RX blocks are retained in the graph but DISABLED. Audio Source and Audio Sink are retained but DISABLED. Start with Simulation Noise=0 and Frequency Offset=0. Later enable the Pluto blocks and replace the simulation loopback with the actual RF path for cabled/authorized OTA testing.'
   states:
     bus_sink: false
     bus_source: false
@@ -1648,7 +1648,7 @@ connections:
 - name: simulation_note
   id: note
   parameters:
-    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the complete digital TX path, interpolates to the same 678.4 kS/s stream used by Pluto, passes it through an AWGN + carrier-offset channel model, then runs the complete RX synchronization/FEC/Opus path and live visualizations. Pluto TX and Pluto RX blocks remain in the graph but are disabled. Audio source and sink are disabled in simulation. Later, enable the Pluto blocks, disable the simulation channel path, and use the real hardware path. Use an appropriate attenuator for cabled RF testing and comply with local RF rules.'
+    content: 'DEFAULT RUN MODE: SOFTWARE SIMULATION. No Pluto is required. The graph uses a deterministic 800 Hz audio tone, runs the digital voice TX path, interpolates the 84.8 kS/s modem to the same 1.696 MSPS stream used by the Pluto blocks, passes it through AWGN + carrier offset, decimates back to 84.8 kS/s, then runs FLL/timing/Costas/QPSK/FEC/Opus RX and the live visualizations. Pluto TX and Pluto RX are retained in the graph but DISABLED by default. Audio Source and Audio Sink are also disabled in simulation. Hardware notes: the Pluto is a 1x1 RF implementation of the AD9363 with separate TX/RX SMA ports; for best portable performance use a tuned external antenna rather than the supplied stock antenna at UHF. At 433 MHz a quarter-wave element is about 17.3 cm and a half-wave dipole is about 34.6 cm total; final dimensions require matching/velocity-factor adjustment and a usable ground plane. Later, enable the Pluto blocks and disable the simulation link. For same-antenna half-duplex operation an external RF T/R switch is needed; otherwise keep TX and RX antennas isolated.'
   states:
     bus_sink: false
     bus_source: false
