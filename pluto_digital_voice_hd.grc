@@ -50,7 +50,7 @@ blocks:
 - name: sps
   id: variable
   parameters:
-    comment: QPSK samples per symbol
+    comment: 'QPSK samples per symbol'
     value: '4'
   states:
     bus_sink: false
@@ -62,7 +62,7 @@ blocks:
 - name: sym_rate
   id: variable
   parameters:
-    comment: 21.2 ksym/s, 424 symbols per 20 ms frame
+    comment: '21.2 ksym/s, 424 symbols per 20 ms frame'
     value: '21200'
   states:
     bus_sink: false
@@ -98,7 +98,7 @@ blocks:
 - name: tx_freq
   id: variable_qtgui_range
   parameters:
-    comment: Default is 433.92 MHz. Change only to a frequency you are authorized to use.
+    comment: 'Default is 433.92 MHz. Change only to a frequency you are authorized to use.'
     label: TX frequency (Hz)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -118,7 +118,7 @@ blocks:
 - name: rx_freq
   id: variable_qtgui_range
   parameters:
-    comment: Default is 433.92 MHz. Change only to a frequency you are authorized to use.
+    comment: 'Default is 433.92 MHz. Change only to a frequency you are authorized to use.'
     label: RX frequency (Hz)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -138,7 +138,7 @@ blocks:
 - name: tx_attenuation
   id: variable_qtgui_range
   parameters:
-    comment: Lower attenuation = higher RF output. Use only within legal power limits.
+    comment: 'Lower attenuation = higher RF output. Use only within legal power limits.'
     label: TX attenuation (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -158,7 +158,7 @@ blocks:
 - name: rx_gain
   id: variable_qtgui_range
   parameters:
-    comment: Start around 38 dB and increase only as needed.
+    comment: 'Start around 38 dB and increase only as needed.'
     label: RX manual gain (dB)
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -178,7 +178,7 @@ blocks:
 - name: mic_gain
   id: variable_qtgui_range
   parameters:
-    comment: Digital microphone gain before compression.
+    comment: 'Digital microphone gain before compression.'
     label: Microphone gain
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -198,7 +198,7 @@ blocks:
 - name: rx_volume
   id: variable_qtgui_range
   parameters:
-    comment: Post-decoder speaker gain.
+    comment: 'Post-decoder speaker gain.'
     label: RX volume
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -246,7 +246,7 @@ blocks:
 - name: qpsk_const
   id: variable_constellation_rect
   parameters:
-    comment: Gray-coded QPSK constellation.
+    comment: 'Gray-coded QPSK constellation.'
     const_points: '[0.70710678+0.70710678j, -0.70710678+0.70710678j, -0.70710678-0.70710678j, 0.70710678-0.70710678j]'
     imag_sect: '2'
     precision: '8'
@@ -266,7 +266,7 @@ blocks:
 - name: audio_src
   id: audio_source
   parameters:
-    comment: 16 kHz mono speech capture.
+    comment: '16 kHz mono speech capture.'
     device_name: ''
     num_outputs: '1'
     ok_to_block: 'True'
@@ -281,7 +281,7 @@ blocks:
 - name: tx_dc
   id: dc_blocker_xx
   parameters:
-    comment: Remove microphone DC bias.
+    comment: 'Remove microphone DC bias.'
     length: '64'
     long_form: 'True'
     type: ff
@@ -296,7 +296,7 @@ blocks:
   id: high_pass_filter
   parameters:
     beta: '6.76'
-    comment: Remove subsonic rumble.
+    comment: 'Remove subsonic rumble.'
     cutoff_freq: '100'
     decim: '1'
     gain: '1'
@@ -335,7 +335,7 @@ blocks:
 - name: tx_gain
   id: blocks_multiply_const_vxx
   parameters:
-    comment: Microphone level trim.
+    comment: 'Microphone level trim.'
     const: mic_gain
     type: float
     vlen: '1'
@@ -355,7 +355,7 @@ blocks:
       \            name=\"speech_soft_limiter\",\n            in_sig=[np.float32],\n            out_sig=[np.float32])\n        self.drive = 1.8\n        self.norm = np.tanh(self.drive)\n\n    def work(self,\
       \ input_items, output_items):\n        x = input_items[0]\n        y = output_items[0]\n        y[:] = np.tanh(self.drive * x) / self.norm\n        return len(y)\n"
     _window_size: '0'
-    comment: Prevents clipping and evens speech level.
+    comment: 'Prevents clipping and evens speech level.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
@@ -398,7 +398,7 @@ blocks:
       \ del self.buf[:40]\n            seq=(self.seq&0xffff).to_bytes(2,'big')\n            crc=zlib.crc32(seq+payload).to_bytes(4,'big')\n            c=conv(bbits(seq+payload+crc)); c=c.reshape(22,34).T.flatten()\n\
       \            out[p:p+848]=np.concatenate((PRE_BITS,SYNC_BITS,c,np.zeros(4,dtype=np.uint8)))\n            p+=848; self.seq=(self.seq+1)&0xffff\n        return p\n"
     _window_size: '0'
-    comment: CRC32 + K=7 rate-1/2 convolutional FEC + 22x34 block interleaving. Self-contained for portability.
+    comment: 'CRC32 + K=7 rate-1/2 convolutional FEC + 22x34 block interleaving. Self-contained for portability.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
@@ -414,7 +414,7 @@ blocks:
   id: blocks_unpacked_to_packed_xx
   parameters:
     bits_per_chunk: '8'
-    comment: Pack 8 coded bits into each byte for QPSK symbol mapping.
+    comment: 'Pack 8 coded bits into each byte for QPSK symbol mapping.'
     endianness: gr.GR_MSB_FIRST
     num_ports: '1'
     type: byte
@@ -429,7 +429,7 @@ blocks:
   id: blocks_packed_to_unpacked_xx
   parameters:
     bits_per_chunk: '2'
-    comment: Split each packed byte into 2-bit QPSK symbol indices (0..3).
+    comment: 'Split each packed byte into 2-bit QPSK symbol indices (0..3).'
     endianness: gr.GR_MSB_FIRST
     num_ports: '1'
     type: byte
@@ -471,7 +471,7 @@ blocks:
   id: root_raised_cosine_filter
   parameters:
     alpha: '0.25'
-    comment: Interpolating RRC: 21.2 ksym/s -> 84.8 kS/s.
+    comment: 'Interpolating RRC: 21.2 ksym/s -> 84.8 kS/s.'
     gain: '1'
     interp: '4'
     ntaps: '161'
@@ -488,7 +488,7 @@ blocks:
 - name: tx_ptt_gate
   id: blocks_multiply_const_vxx
   parameters:
-    comment: Half-duplex PTT gate. Zero RF waveform when RX / Standby is selected.
+    comment: 'Half-duplex PTT gate. Zero RF waveform when RX / Standby is selected.'
     const: ptt_enable
     mode: scalar
     type: complex
@@ -545,7 +545,7 @@ blocks:
     bbdc: 'True'
     bandwidth: '200000'
     buffer_size: '32768'
-    comment: 200 kHz is Pluto hardware minimum; software channel filter follows.
+    comment: '200 kHz is Pluto hardware minimum; software channel filter follows.'
     fpass: '0'
     filter: ''
     filter_source: '''Auto'''
@@ -569,7 +569,7 @@ blocks:
 - name: rx_decim
   id: rational_resampler_xxx
   parameters:
-    comment: 678.4 kS/s -> 84.8 kS/s.
+    comment: '678.4 kS/s -> 84.8 kS/s.'
     decim: '8'
     fbw: '0.45'
     interp: '1'
@@ -586,7 +586,7 @@ blocks:
   id: low_pass_filter
   parameters:
     beta: '6.76'
-    comment: Software channel filter removes out-of-channel noise before synchronization.
+    comment: 'Software channel filter removes out-of-channel noise before synchronization.'
     cutoff_freq: '12500'
     decim: '1'
     gain: '1'
@@ -605,7 +605,7 @@ blocks:
 - name: rx_fll
   id: digital_fll_band_edge_cc
   parameters:
-    comment: Coarse frequency recovery for independent Pluto oscillators.
+    comment: 'Coarse frequency recovery for independent Pluto oscillators.'
     filter_size: '65'
     rolloff: '0.25'
     samps_per_sym: sps
@@ -622,7 +622,7 @@ blocks:
   id: root_raised_cosine_filter
   parameters:
     alpha: '0.25'
-    comment: Matched RRC filter before symbol timing recovery.
+    comment: 'Matched RRC filter before symbol timing recovery.'
     decim: '1'
     gain: '1'
     interp: '1'
@@ -662,7 +662,7 @@ blocks:
 - name: rx_costas
   id: digital_costas_loop_cc
   parameters:
-    comment: QPSK carrier recovery.
+    comment: 'QPSK carrier recovery.'
     order: '4'
     use_snr: 'False'
     w: '0.01'
@@ -703,7 +703,7 @@ blocks:
       \        gr.sync_interpolator.__init__(self, name=\"qpsk_symbols_to_bits\",\n                                       interp=2, in_sig=[np.uint8], out_sig=[np.uint8])\n\n    def work(self, input_items,\
       \ output_items):\n        x = input_items[0]\n        y = output_items[0]\n        n = len(x)\n        y[0:2*n:2] = (x >> 1) & 1\n        y[1:2*n:2] = x & 1\n        return 2*n\n"
     _window_size: '0'
-    comment: Expand symbol indices back to individual FEC bits.
+    comment: 'Expand symbol indices back to individual FEC bits.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
@@ -733,7 +733,7 @@ blocks:
       \                body=np.packbits(decbits[:368],bitorder='big').tobytes(); seq=body[:2]; payload=body[2:42]; crc=body[42:46]\n                if len(body)>=46 and zlib.crc32(seq+payload).to_bytes(4,'big')==crc:\n\
       \                    out[made:made+42]=np.frombuffer(seq+payload,dtype=np.uint8); made+=42; self.buf=self.buf[total:]; continue\n            self.buf=self.buf[1:]\n        return made\n"
     _window_size: '0'
-    comment: Frame sync + Viterbi + CRC32. Emits 2-byte sequence + 40-byte Opus packet.
+    comment: 'Frame sync + Viterbi + CRC32. Emits 2-byte sequence + 40-byte Opus packet.'
     affinity: ''
     alias: ''
     maxoutbuf: '0'
@@ -767,7 +767,7 @@ blocks:
   id: low_pass_filter
   parameters:
     beta: '6.76'
-    comment: Final 7 kHz speech low-pass after Opus decode.
+    comment: 'Final 7 kHz speech low-pass after Opus decode.'
     cutoff_freq: '7000'
     decim: '1'
     gain: '1'
@@ -786,7 +786,7 @@ blocks:
 - name: rx_volume_block
   id: blocks_multiply_const_vxx
   parameters:
-    comment: Speaker volume.
+    comment: 'Speaker volume.'
     const: rx_volume
     type: float
     vlen: '1'
@@ -821,7 +821,7 @@ blocks:
     average: '0.2'
     axislabels: 'True'
     bw: baseband_rate
-    comment: TX baseband spectrum.
+    comment: 'TX baseband spectrum.'
     ctrlpanel: 'True'
     fc: '0'
     fftsize: '4096'
@@ -852,7 +852,7 @@ blocks:
     average: '0.2'
     axislabels: 'True'
     bw: baseband_rate
-    comment: RX filtered spectrum.
+    comment: 'RX filtered spectrum.'
     ctrlpanel: 'True'
     fc: '0'
     fftsize: '4096'
