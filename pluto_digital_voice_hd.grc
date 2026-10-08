@@ -328,7 +328,7 @@ blocks:
     gain: '1'
     interp: '1'
     samp_rate: samp_audio
-    transition_width: '100'
+    width: '100'
     type: fir_filter_fff
     win: window.WIN_HAMMING
   states:
@@ -347,7 +347,7 @@ blocks:
     gain: '1'
     interp: '1'
     samp_rate: samp_audio
-    transition_width: '500'
+    width: '500'
     type: fir_filter_fff
     win: window.WIN_HAMMING
   states:
@@ -496,14 +496,13 @@ blocks:
   id: root_raised_cosine_filter
   parameters:
     alpha: '0.25'
-    comment: RRC pulse shaping; actual occupied waveform is ~24.5 kHz class.
-    decim: '1'
+    comment: Interpolating RRC: 21.2 ksym/s -> 84.8 kS/s.
     gain: '1'
-    interp: '1'
+    interp: '4'
     ntaps: '161'
     samp_rate: baseband_rate
     sym_rate: sym_rate
-    type: fir_filter_ccf
+    type: interp_fir_filter_ccf
   states:
     coordinate:
     - 1820
@@ -527,7 +526,7 @@ blocks:
 - name: tx_to_pluto
   id: rational_resampler_xxx
   parameters:
-    comment: '8x interpolation: 78.4 kS/s -> 627.2 kS/s.'
+    comment: '8x interpolation: 84.8 kS/s -> 684.8 kS/s.'
     decim: '1'
     fbw: '0.45'
     interp: '8'
@@ -590,7 +589,7 @@ blocks:
 - name: rx_decim
   id: rational_resampler_xxx
   parameters:
-    comment: 627.2 kS/s -> 78.4 kS/s.
+    comment: 684.8 kS/s -> 84.8 kS/s.
     decim: '8'
     fbw: '0.45'
     interp: '1'
@@ -612,7 +611,7 @@ blocks:
     gain: '1'
     interp: '1'
     samp_rate: baseband_rate
-    transition_width: '2500'
+    width: '2500'
     type: fir_filter_ccf
     win: window.WIN_HAMMING
   states:
@@ -876,24 +875,31 @@ blocks:
 - name: rx_const
   id: qtgui_const_sink_x
   parameters:
-    autoscale: 'True'
-    axislabels: 'True'
-    comment: QPSK constellation after timing/carrier recovery.
-    grid: 'True'
-    gui_hint: 'dashboard@2: 0,0,1,1'
-    label: RX constellation
-    name: QPSK
-    nconnections: '1'
-    size: '1024'
-    trigger_mode: free
     type: complex
+    name: '"QPSK constellation"'
+    size: '2048'
+    grid: 'True'
+    autoscale: 'True'
+    ymin: '-1.5'
+    ymax: '1.5'
+    xmin: '-1.5'
+    xmax: '1.5'
+    nconnections: '1'
     update_time: '0.10'
-    x_axis: '0'
-    x_max: '2'
-    x_min: '-2'
-    y_axis: '0'
-    y_max: '2'
-    y_min: '-2'
+    gui_hint: 'dashboard@2: 0,0,1,1'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_level: '0.0'
+    tr_chan: '0'
+    tr_tag: '""'
+    legend: 'True'
+    axislabels: 'True'
+    label1: 'RX symbols'
+    width1: '1'
+    color1: '"blue"'
+    style1: '0'
+    marker1: '0'
+    alpha1: '1.0'
   states:
     coordinate:
     - 1120
@@ -909,7 +915,7 @@ blocks:
       16 kHz mono -> Opus 16 kbps CBR / 20 ms -> CRC32 -> K=7 rate-1/2 FEC -> 22x34 interleave -> preamble + sync -> differential Gray QPSK -> RRC alpha 0.25.
 
 
-      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 678.4 kS/s. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
+      424 QPSK symbols every 20 ms at 21.2 ksym/s. Baseband 84.8 kS/s. Pluto stream 684.8 kS/s. Approx. waveform bandwidth class 26.5 kHz. Pluto RF filter remains 200 kHz minimum.
 
 
       RX: software channel LPF -> FLL -> RRC/Gardner -> Costas -> constellation -> differential decode -> frame sync -> Viterbi -> CRC -> Opus PLC -> speaker.
@@ -998,569 +1004,3 @@ blocks:
     type: float
     name: '''TX Microphone'''
     ylabel: Amplitude
-    yunit: '""'
-    size: '4000'
-    srate: samp_audio
-    grid: 'True'
-    autoscale: 'False'
-    ymin: '-1'
-    ymax: '1'
-    nconnections: '1'
-    update_time: '0.10'
-    entags: 'False'
-    gui_hint: 'dashboard@3: 0,0,1,1'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_level: '0'
-    tr_delay: '0'
-    tr_chan: '0'
-    tr_tag: '""'
-    ctrlpanel: 'False'
-    legend: 'True'
-    axislabels: 'True'
-    stemplot: 'False'
-    label1: Mic
-    width1: '1'
-    color1: blue
-    style1: '1'
-    marker1: '-1'
-    alpha1: '1.0'
-    label2: ''
-    width2: '1'
-    color2: red
-    style2: '1'
-    marker2: '-1'
-    alpha2: '1.0'
-    label3: ''
-    width3: '1'
-    color3: red
-    style3: '1'
-    marker3: '-1'
-    alpha3: '1.0'
-    label4: ''
-    width4: '1'
-    color4: red
-    style4: '1'
-    marker4: '-1'
-    alpha4: '1.0'
-    label5: ''
-    width5: '1'
-    color5: red
-    style5: '1'
-    marker5: '-1'
-    alpha5: '1.0'
-    label6: ''
-    width6: '1'
-    color6: red
-    style6: '1'
-    marker6: '-1'
-    alpha6: '1.0'
-    label7: ''
-    width7: '1'
-    color7: red
-    style7: '1'
-    marker7: '-1'
-    alpha7: '1.0'
-    label8: ''
-    width8: '1'
-    color8: red
-    style8: '1'
-    marker8: '-1'
-    alpha8: '1.0'
-    label9: ''
-    width9: '1'
-    color9: red
-    style9: '1'
-    marker9: '-1'
-    alpha9: '1.0'
-    label10: ''
-    width10: '1'
-    color10: red
-    style10: '1'
-    marker10: '-1'
-    alpha10: '1.0'
-  states:
-    coordinate:
-    - 200
-    - 900
-    rotation: 0
-    state: enabled
-- name: rx_audio_time
-  id: qtgui_time_sink_x
-  parameters:
-    type: float
-    name: '''RX Audio'''
-    ylabel: Amplitude
-    yunit: '""'
-    size: '4000'
-    srate: samp_audio
-    grid: 'True'
-    autoscale: 'False'
-    ymin: '-1'
-    ymax: '1'
-    nconnections: '1'
-    update_time: '0.10'
-    entags: 'False'
-    gui_hint: 'dashboard@3: 0,1,1,1'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_level: '0'
-    tr_delay: '0'
-    tr_chan: '0'
-    tr_tag: '""'
-    ctrlpanel: 'False'
-    legend: 'True'
-    axislabels: 'True'
-    stemplot: 'False'
-    label1: RX
-    width1: '1'
-    color1: red
-    style1: '1'
-    marker1: '-1'
-    alpha1: '1.0'
-    label2: ''
-    width2: '1'
-    color2: red
-    style2: '1'
-    marker2: '-1'
-    alpha2: '1.0'
-    label3: ''
-    width3: '1'
-    color3: red
-    style3: '1'
-    marker3: '-1'
-    alpha3: '1.0'
-    label4: ''
-    width4: '1'
-    color4: red
-    style4: '1'
-    marker4: '-1'
-    alpha4: '1.0'
-    label5: ''
-    width5: '1'
-    color5: red
-    style5: '1'
-    marker5: '-1'
-    alpha5: '1.0'
-    label6: ''
-    width6: '1'
-    color6: red
-    style6: '1'
-    marker6: '-1'
-    alpha6: '1.0'
-    label7: ''
-    width7: '1'
-    color7: red
-    style7: '1'
-    marker7: '-1'
-    alpha7: '1.0'
-    label8: ''
-    width8: '1'
-    color8: red
-    style8: '1'
-    marker8: '-1'
-    alpha8: '1.0'
-    label9: ''
-    width9: '1'
-    color9: red
-    style9: '1'
-    marker9: '-1'
-    alpha9: '1.0'
-    label10: ''
-    width10: '1'
-    color10: red
-    style10: '1'
-    marker10: '-1'
-    alpha10: '1.0'
-  states:
-    coordinate:
-    - 200
-    - 900
-    rotation: 0
-    state: enabled
-- name: fll_time
-  id: qtgui_time_sink_x
-  parameters:
-    type: float
-    name: '''FLL Frequency Estimate'''
-    ylabel: Amplitude
-    yunit: '""'
-    size: '4000'
-    srate: baseband_rate
-    grid: 'True'
-    autoscale: 'False'
-    ymin: '-0.2'
-    ymax: '0.2'
-    nconnections: '1'
-    update_time: '0.10'
-    entags: 'False'
-    gui_hint: 'dashboard@2: 0,1,1,1'
-    tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
-    tr_level: '0'
-    tr_delay: '0'
-    tr_chan: '0'
-    tr_tag: '""'
-    ctrlpanel: 'False'
-    legend: 'True'
-    axislabels: 'True'
-    stemplot: 'False'
-    label1: FLL
-    width1: '1'
-    color1: green
-    style1: '1'
-    marker1: '-1'
-    alpha1: '1.0'
-    label2: ''
-    width2: '1'
-    color2: red
-    style2: '1'
-    marker2: '-1'
-    alpha2: '1.0'
-    label3: ''
-    width3: '1'
-    color3: red
-    style3: '1'
-    marker3: '-1'
-    alpha3: '1.0'
-    label4: ''
-    width4: '1'
-    color4: red
-    style4: '1'
-    marker4: '-1'
-    alpha4: '1.0'
-    label5: ''
-    width5: '1'
-    color5: red
-    style5: '1'
-    marker5: '-1'
-    alpha5: '1.0'
-    label6: ''
-    width6: '1'
-    color6: red
-    style6: '1'
-    marker6: '-1'
-    alpha6: '1.0'
-    label7: ''
-    width7: '1'
-    color7: red
-    style7: '1'
-    marker7: '-1'
-    alpha7: '1.0'
-    label8: ''
-    width8: '1'
-    color8: red
-    style8: '1'
-    marker8: '-1'
-    alpha8: '1.0'
-    label9: ''
-    width9: '1'
-    color9: red
-    style9: '1'
-    marker9: '-1'
-    alpha9: '1.0'
-    label10: ''
-    width10: '1'
-    color10: red
-    style10: '1'
-    marker10: '-1'
-    alpha10: '1.0'
-  states:
-    coordinate:
-    - 200
-    - 900
-    rotation: 0
-    state: enabled
-- name: tx_mag
-  id: blocks_complex_to_mag_squared
-  parameters:
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: tx_power_add
-  id: blocks_add_const_vxx
-  parameters:
-    type: float
-    const: 1e-12
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: tx_power_db
-  id: blocks_nlog10_ff
-  parameters:
-    n: '10'
-    k: '0'
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: rx_mag
-  id: blocks_complex_to_mag_squared
-  parameters:
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: rx_power_add
-  id: blocks_add_const_vxx
-  parameters:
-    type: float
-    const: 1e-12
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: rx_power_db
-  id: blocks_nlog10_ff
-  parameters:
-    n: '10'
-    k: '0'
-    vlen: '1'
-  states:
-    coordinate:
-    - 0
-    - 0
-    rotation: 0
-    state: enabled
-- name: power_sink
-  id: qtgui_number_sink
-  parameters:
-    name: '"Baseband Power"'
-    type: float
-    autoscale: 'False'
-    avg: '0.1'
-    graph_type: qtgui.NUM_GRAPH_VERT
-    nconnections: '2'
-    min: '-120'
-    max: '5'
-    update_time: '0.20'
-    label1: TX
-    unit1: dBFS
-    factor1: '1'
-    label2: RX
-    unit2: dBFS
-    factor2: '1'
-    label3: ''
-    unit3: ''
-    factor3: '1'
-    label4: ''
-    unit4: ''
-    factor4: '1'
-    label5: ''
-    unit5: ''
-    factor5: '1'
-    label6: ''
-    unit6: ''
-    factor6: '1'
-    label7: ''
-    unit7: ''
-    factor7: '1'
-    label8: ''
-    unit8: ''
-    factor8: '1'
-    label9: ''
-    unit9: ''
-    factor9: '1'
-    label10: ''
-    unit10: ''
-    factor10: '1'
-    gui_hint: 'dashboard@1: 1,0,1,2'
-  states:
-    coordinate:
-    - 1180
-    - 780
-    rotation: 0
-    state: enabled
-connections:
-- - audio_src
-  - '0'
-  - tx_dc
-  - '0'
-- - tx_dc
-  - '0'
-  - tx_hp
-  - '0'
-- - tx_hp
-  - '0'
-  - tx_lp
-  - '0'
-- - tx_lp
-  - '0'
-  - tx_gain
-  - '0'
-- - tx_gain
-  - '0'
-  - tx_limiter
-  - '0'
-- - tx_limiter
-  - '0'
-  - opus_enc
-  - '0'
-- - opus_enc
-  - '0'
-  - fec_tx
-  - '0'
-- - fec_tx
-  - '0'
-  - unpack_bits_tx
-  - '0'
-- - unpack_bits_tx
-  - '0'
-  - qpsk_symbols_tx
-  - '0'
-- - qpsk_symbols_tx
-  - '0'
-  - diff_enc_tx
-  - '0'
-- - diff_enc_tx
-  - '0'
-  - qpsk_map_tx
-  - '0'
-- - qpsk_map_tx
-  - '0'
-  - tx_rrc
-  - '0'
-- - tx_rrc
-  - '0'
-  - tx_ptt_gate
-  - '0'
-- - tx_ptt_gate
-  - '0'
-  - tx_to_pluto
-  - '0'
-- - tx_to_pluto
-  - '0'
-  - pluto_tx
-  - '0'
-- - tx_ptt_gate
-  - '0'
-  - tx_fft
-  - '0'
-- - pluto_rx
-  - '0'
-  - rx_decim
-  - '0'
-- - rx_decim
-  - '0'
-  - rx_channel
-  - '0'
-- - rx_channel
-  - '0'
-  - rx_fft
-  - '0'
-- - rx_channel
-  - '0'
-  - rx_fll
-  - '0'
-- - rx_fll
-  - '0'
-  - rx_rrc
-  - '0'
-- - rx_rrc
-  - '0'
-  - rx_sym
-  - '0'
-- - rx_sym
-  - '0'
-  - rx_costas
-  - '0'
-- - rx_costas
-  - '0'
-  - rx_const
-  - '0'
-- - rx_costas
-  - '0'
-  - rx_const_dec
-  - '0'
-- - rx_const_dec
-  - '0'
-  - rx_diff
-  - '0'
-- - rx_diff
-  - '0'
-  - rx_symbols_to_bits
-  - '0'
-- - rx_symbols_to_bits
-  - '0'
-  - fec_rx
-  - '0'
-- - fec_rx
-  - '0'
-  - opus_dec
-  - '0'
-- - opus_dec
-  - '0'
-  - rx_volume_block
-  - '0'
-- - rx_volume_block
-  - '0'
-  - audio_sink
-  - '0'
-- - audio_src
-  - '0'
-  - tx_audio_time
-  - '0'
-- - rx_fll
-  - '1'
-  - fll_time
-  - '0'
-- - opus_dec
-  - '0'
-  - rx_audio_time
-  - '0'
-- - qpsk_map_tx
-  - '0'
-  - tx_const
-  - '0'
-- - tx_ptt_gate
-  - '0'
-  - tx_mag
-  - '0'
-- - tx_mag
-  - '0'
-  - tx_power_add
-  - '0'
-- - tx_power_add
-  - '0'
-  - tx_power_db
-  - '0'
-- - tx_power_db
-  - '0'
-  - power_sink
-  - '0'
-- - rx_channel
-  - '0'
-  - rx_mag
-  - '0'
-- - rx_mag
-  - '0'
-  - rx_power_add
-  - '0'
-- - rx_power_add
-  - '0'
-  - rx_power_db
-  - '0'
-- - rx_power_db
-  - '0'
-  - power_sink
-  - '1'
-metadata:
-  file_format: 1
-  grc_version: 3.10.10.0
